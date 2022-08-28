@@ -1,0 +1,73 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           curl-gen
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/PKopel/curl-gen#readme>
+homepage:       https://github.com/PKopel/curl-gen#readme
+bug-reports:    https://github.com/PKopel/curl-gen/issues
+author:         Paweł Kopel
+maintainer:     Pawel.Kopel2@gmail.com
+copyright:      2022 Paweł Kopel
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/PKopel/curl-gen
+
+library
+  exposed-modules:
+      Import
+      Run
+      Types
+      Util
+  other-modules:
+      Paths_curl_gen
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.11 && <10
+    , rio >=0.1.12.0
+    , text
+  default-language: Haskell2010
+
+executable curl-gen
+  main-is: Main.hs
+  other-modules:
+      Paths_curl_gen
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.11 && <10
+    , curl-gen
+    , optparse-simple
+    , rio >=0.1.12.0
+    , text
+  default-language: Haskell2010
+
+test-suite curl-gen-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      UtilSpec
+      Paths_curl_gen
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.11 && <10
+    , curl-gen
+    , hspec
+    , rio >=0.1.12.0
+    , text
+  default-language: Haskell2010
