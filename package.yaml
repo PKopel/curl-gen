@@ -23,6 +23,7 @@ dependencies:
   - base >= 4.11 && < 10
   - rio >= 0.1.12.0
   - text
+  - attoparsec
 
 ghc-options:
   - -Wall
@@ -37,6 +38,9 @@ ghc-options:
 
 library:
   source-dirs: src
+  build-tools:
+    - alex
+    - happy
 
 executables:
   curl-gen:
