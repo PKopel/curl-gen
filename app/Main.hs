@@ -12,10 +12,13 @@ main :: IO ()
 main = do
   (options, ()) <- simpleOptions
     $(simpleVersion Paths_curl_gen.version)
-    "Header for command line arguments"
-    "Program description, also for command line arguments"
+    "curl-gen"
+    "Generate bash scripts from curl commands"
     (Options
-       <$> switch ( long "verbose"
+       <$> strArgument (metavar "FILE" 
+                      <> help "File containing curl commands."
+                      )       
+       <*> switch ( long "verbose"
                  <> short 'v'
                  <> help "Verbose output?"
                   )

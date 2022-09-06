@@ -9,7 +9,7 @@ module Types
   , Header(..)
   , URL(..)
   , Option
-  , Dta
+  , Dta(..)
   ) where
 
 import           Data.Semigroup                 ( )
@@ -25,6 +25,7 @@ import           RIO                            ( ($)
                                                 , LogFunc
                                                 , Ord(..)
                                                 , Show(show)
+                                                , String
                                                 , lens
                                                 , map
                                                 )
@@ -33,7 +34,8 @@ import           RIO.Process
 
 -- | Command line arguments
 data Options = Options
-  { optionsVerbose :: !Bool
+  { filePath       :: String
+  , optionsVerbose :: !Bool
   }
 
 data App = App
@@ -75,10 +77,14 @@ data URL = URL
 instance Show URL where
   show (URL p h a) = T.unpack $ p <> "://" <> h <> a
 
-data Curl = Curl URL [Option] [Header] Dta
+data Curl = Curl
+  { url :: URL
+  , ops :: [Option]
+  , hds :: [Header]
+  , dta :: Dta
+  }
 
 instance Show Curl where
-  show (Curl url ops hds dta) = intercalate
-    " \\\n\t"
-    (fstLine : show url : show dta : map show hds)
-    where fstLine = T.unpack $ T.unwords ("curl" : ops)
+  show (Curl u o h d) = intercalate " \\\n\t"
+                                    (fstLine : show u : show d : map show h)
+    where fstLine = T.unpack $ T.unwords ("curl" : o)

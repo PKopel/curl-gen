@@ -14,6 +14,7 @@ import           Data.Text                     as T
 import           Import                  hiding ( host
                                                 , not
                                                 , path
+                                                , url
                                                 )
 import           RIO.List.Partial               ( foldl1 )
 
@@ -21,7 +22,7 @@ protocols :: [Parser Text]
 protocols = ["https", "http", "ftp"]
 
 skipSpaces :: Parser ()
-skipSpaces = skipMany space
+skipSpaces = skipMany (space <|> oneOf "\n\\")
 
 oneOf :: [Char] -> Parser Char
 oneOf list = satisfy (`elem` list)
