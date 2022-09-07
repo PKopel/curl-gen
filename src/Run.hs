@@ -30,7 +30,7 @@ curlOps (A _ : _   ) _ = Left "Too many urls"
 run :: RIO App ()
 run = do
   contents <- view (to appOptions) <&> filePath >>= readFileUtf8
-  liftIO $ case parseOnly curl contents >>= curlCmd of
+  liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
     Left  s  -> print s
     Right cu -> print cu
 

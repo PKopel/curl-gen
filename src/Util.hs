@@ -1,11 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TupleSections #-}
 -- | Silly utility module, used to demonstrate how to write a test
 -- case.
 module Util
-  ( plus2
+  ( secondM
   ) where
+import           RIO                            ( (<$>)
+                                                , Functor
+                                                )
 
-import           RIO
-
-plus2 :: Int -> Int
-plus2 = (+ 2)
+secondM :: Functor m => (b -> m b') -> (a, b) -> m (a, b')
+secondM f ~(a, b) = (a, ) <$> f b

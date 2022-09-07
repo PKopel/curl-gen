@@ -1,3 +1,4 @@
-curl -X GET -k -v https://test.com/path \
+# test example
+curl -X PUT -k -v https://test.com/path \
     --header 'Accept: application/json' \
     --data '{"test":"data"}'

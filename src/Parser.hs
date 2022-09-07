@@ -2,7 +2,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Parser
-  ( curl
+  ( file
   ) where
 
 import           Data.Attoparsec.Combinator
@@ -12,7 +12,6 @@ import           Data.Attoparsec.Text    hiding ( option
 import           Data.Text                     as T
                                          hiding ( foldl1 )
 import           Import                  hiding ( host
-                                                , not
                                                 , path
                                                 , url
                                                 )
@@ -22,16 +21,16 @@ protocols :: [Parser Text]
 protocols = ["https", "http", "ftp"]
 
 skipSpaces :: Parser ()
-skipSpaces = skipMany (space <|> oneOf "\n\\")
+skipSpaces = skipMany ((char '\n' <!> space) <|> "\\\n" $> ' ')
 
 oneOf :: [Char] -> Parser Char
-oneOf list = satisfy (`elem` list)
+oneOf = satisfy . inClass
 
 oneOfT :: [Parser Text] -> Parser Text
 oneOfT = foldl1 (<|>)
 
 noneOf :: [Char] -> Parser Char
-noneOf list = satisfy (`notElem` list)
+noneOf = satisfy . notInClass
 
 between :: Char -> Parser String
 between c = char c *> manyTill anyChar (char c)
@@ -52,8 +51,9 @@ url =
     <*> ("://" *> host)
     <*> option "" (path <* many (oneOf "'\""))
 
-ifNot :: Parser b -> Parser a -> Parser a
-ifNot bad good = eitherP bad good >>= \case
+infixl 3 <!>
+(<!>) :: Parser b -> Parser a -> Parser a
+bad <!> good = eitherP bad good >>= \case
   Right a -> return a
   Left  _ -> fail "bad"
 
@@ -62,9 +62,18 @@ argument = skipSpaces *> (arg <|> param <|> flag)
  where
   name  = (<>) <$> many1 (char '-') <*> many letter <&> T.pack
   value = (:) <$> noneOf "-" <*> many1 (noneOf " ") <&> T.pack
-  param = P <$> name <*> (skipSpaces *> ifNot url (string <|> value))
+  param = P <$> name <*> (skipSpaces *> url <!> (string <|> value))
   flag  = F <$> name
   arg   = A <$> url
 
-curl :: Parser [Argument]
-curl = "curl" *> many argument
+command :: Parser [Argument]
+command = "curl" *> many argument
+
+curl :: Parser ([Text], [Argument])
+curl = (,) <$> ids <*> cmd
+ where
+  ids = char '#' *> takeTill (== '\n') <* char '\n' <&> T.words
+  cmd = skipSpaces *> command <* option ' ' (char '\n')
+
+file :: Parser [([Text], [Argument])]
+file = many (skipMany space *> curl)
