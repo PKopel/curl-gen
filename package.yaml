@@ -22,8 +22,8 @@ description: Please see the README on Github at <https://github.com/PKopel/curl-
 dependencies:
   - base >= 4.11 && < 10
   - rio >= 0.1.12.0
-  - text
   - attoparsec
+  - aeson
 
 ghc-options:
   - -Wall

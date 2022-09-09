@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       App
+      Bash.Function
       Parser
       Run
       Types
@@ -39,10 +40,10 @@ library
       alex
     , happy
   build-depends:
-      attoparsec
+      aeson
+    , attoparsec
     , base >=4.11 && <10
     , rio >=0.1.12.0
-    , text
   default-language: Haskell2010
 
 executable curl-gen
@@ -53,12 +54,12 @@ executable curl-gen
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      attoparsec
+      aeson
+    , attoparsec
     , base >=4.11 && <10
     , curl-gen
     , optparse-simple
     , rio >=0.1.12.0
-    , text
   default-language: Haskell2010
 
 test-suite curl-gen-test
@@ -71,10 +72,10 @@ test-suite curl-gen-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      attoparsec
+      aeson
+    , attoparsec
     , base >=4.11 && <10
     , curl-gen
     , hspec
     , rio >=0.1.12.0
-    , text
   default-language: Haskell2010

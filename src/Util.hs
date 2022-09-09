@@ -1,7 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TupleSections #-}
--- | Silly utility module, used to demonstrate how to write a test
--- case.
+
 module Util
   ( secondM
   ) where

@@ -45,6 +45,7 @@ function read_values() {
 
 
 function example_get() {
+    local HOST=${ADDRESS:-'example.com'}
     local DATA='{
     "test":'${VALUES[".test"]:-'{
         "data":'${VALUES[".test.data"]:-'1234'}'
@@ -62,7 +63,7 @@ function example_get() {
 CURL=$(which curl)
 
 COMMAND=()
-HOST="example.com"
+ADDRESS="example.com"
 
 while [[ "$#" -gt 0 ]]; do
     OPTION="$1"
@@ -78,8 +79,8 @@ while [[ "$#" -gt 0 ]]; do
         print_usage
         exit 0
         ;;
-    --host)
-        HOST="$1"
+    --addr | -a)
+        ADDRESS="$1"
         shift
         ;;
     --set)

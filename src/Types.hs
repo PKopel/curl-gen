@@ -11,7 +11,7 @@ module Types
   ) where
 
 import           Data.Semigroup                 ( )
-import           Data.Text                     as T
+import           RIO.Text                     as T
                                          hiding ( intercalate
                                                 , map
                                                 )

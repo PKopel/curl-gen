@@ -1,10 +1,14 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 module App
     ( App(..)
     , Options(..)
     ) where
 
-import           RIO                            ( HasLogFunc(..)
+import           RIO                            ( Bool
+                                                , HasLogFunc(..)
                                                 , LogFunc
+                                                , String
                                                 , lens
                                                 )
 import           RIO.Process                    ( HasProcessContext(..)
