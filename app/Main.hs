@@ -1,12 +1,15 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
-module Main (main) where
+module Main
+  ( main
+  ) where
 
-import Import
-import Run
-import RIO.Process
-import Options.Applicative.Simple
+import           App
+import           Options.Applicative.Simple
 import qualified Paths_curl_gen
+import           RIO
+import           RIO.Process
+import           Run
 
 main :: IO ()
 main = do
@@ -15,9 +18,9 @@ main = do
     "curl-gen"
     "Generate bash scripts from curl commands"
     (Options
-       <$> strArgument (metavar "FILE" 
+       <$> strArgument (metavar "FILE"
                       <> help "File containing curl commands."
-                      )       
+                       )
        <*> switch ( long "verbose"
                  <> short 'v'
                  <> help "Verbose output?"

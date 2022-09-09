@@ -2,9 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Types
-  ( App(..)
-  , Options(..)
-  , Argument(..)
+  ( Argument(..)
   , Curl(..)
   , Header(..)
   , URL(..)
@@ -19,38 +17,12 @@ import           Data.Text                     as T
                                                 )
 import           RIO                            ( ($)
                                                 , (<>)
-                                                , Bool(..)
                                                 , Eq
-                                                , HasLogFunc(..)
-                                                , LogFunc
                                                 , Ord(..)
                                                 , Show(show)
-                                                , String
-                                                , lens
                                                 , map
                                                 )
 import           RIO.List                       ( intercalate )
-import           RIO.Process
-
--- | Command line arguments
-data Options = Options
-  { filePath       :: String
-  , optionsVerbose :: !Bool
-  }
-
-data App = App
-  { appLogFunc        :: !LogFunc
-  , appProcessContext :: !ProcessContext
-  , appOptions        :: !Options
-  }
-
-    -- Add other app-specific configuration information here
-instance HasLogFunc App where
-  logFuncL = lens appLogFunc (\x y -> x { appLogFunc = y })
-
-instance HasProcessContext App where
-  processContextL =
-    lens appProcessContext (\x y -> x { appProcessContext = y })
 
 
 data Argument = A URL | P T.Text T.Text | F  T.Text deriving (Show, Eq, Ord)

@@ -1,15 +1,17 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
 module Run
   ( run
   ) where
 
+import           App
 import           Data.Attoparsec.Text    hiding ( D )
-import           Import
 import           Parser
+import           RIO
 import           RIO.List
 import           System.IO                      ( print )
+import           Types
+import           Util                           ( secondM )
 
 curlCmd :: [Argument] -> Either String Curl
 curlCmd args = case sort args of

@@ -9,13 +9,14 @@ import           Data.Attoparsec.Combinator
 import           Data.Attoparsec.Text    hiding ( option
                                                 , string
                                                 )
-import           Data.Text                     as T
-                                         hiding ( foldl1 )
-import           Import                  hiding ( host
-                                                , path
-                                                , url
-                                                )
+import           RIO                     hiding ( words )
 import           RIO.List.Partial               ( foldl1 )
+import           RIO.Text                       ( pack
+                                                , words
+                                                )
+import           Types                          ( Argument(..)
+                                                , URL(URL)
+                                                )
 
 protocols :: [Parser Text]
 protocols = ["https", "http", "ftp"]
@@ -36,13 +37,13 @@ between :: Char -> Parser String
 between c = char c *> manyTill anyChar (char c)
 
 string :: Parser Text
-string = skipSpaces *> between '\'' <|> between '"' <&> T.pack
+string = skipSpaces *> between '\'' <|> between '"' <&> pack
 
 host :: Parser Text
-host = many (letter <|> digit <|> oneOf "$._") <&> T.pack
+host = many (letter <|> digit <|> oneOf "$._") <&> pack
 
 path :: Parser Text
-path = many (letter <|> digit <|> oneOf "$/?%=_.") <&> T.pack
+path = many (letter <|> digit <|> oneOf "$/?%=_.") <&> pack
 
 url :: Parser URL
 url =
@@ -60,8 +61,8 @@ bad <!> good = eitherP bad good >>= \case
 argument :: Parser Argument
 argument = skipSpaces *> (arg <|> param <|> flag)
  where
-  name  = (<>) <$> many1 (char '-') <*> many letter <&> T.pack
-  value = (:) <$> noneOf "-" <*> many1 (noneOf " ") <&> T.pack
+  name  = (<>) <$> many1 (char '-') <*> many letter <&> pack
+  value = (:) <$> noneOf "-" <*> many1 (noneOf " ") <&> pack
   param = P <$> name <*> (skipSpaces *> url <!> (string <|> value))
   flag  = F <$> name
   arg   = A <$> url
@@ -72,7 +73,7 @@ command = "curl" *> many argument
 curl :: Parser ([Text], [Argument])
 curl = (,) <$> ids <*> cmd
  where
-  ids = char '#' *> takeTill (== '\n') <* char '\n' <&> T.words
+  ids = char '#' *> takeTill (== '\n') <* char '\n' <&> words
   cmd = skipSpaces *> command <* option ' ' (char '\n')
 
 file :: Parser [([Text], [Argument])]
