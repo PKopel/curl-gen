@@ -1,4 +1,4 @@
-name: Stan Release
+name: Release
 
 on:
   # Trigger the workflow on the new 'v*' tag created
@@ -103,6 +103,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ${{ env.BINARY_PATH }}
-          asset_name: stan-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}${{ env.EXT }}
+          asset_path: ./bin/curl-gen
+          asset_name: curl-gen-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}}
           asset_content_type: application/octet-stream
