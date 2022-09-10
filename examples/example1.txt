@@ -1,4 +1,4 @@
 # test example
 curl -X PUT -k -v https://test.com/path \
     --header 'Accept: application/json' \
-    --data '{"test":"data"}'
+    --data '{"obj":{"string":"data"},"array":[1,null]}'

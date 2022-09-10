@@ -6,11 +6,15 @@ module Run
   ) where
 
 import           App
+import           Bash.Function                  ( writeFunction )
 import           Data.Attoparsec.Text    hiding ( D )
 import           Parser
 import           RIO
 import           RIO.List
-import           System.IO                      ( print )
+import           RIO.Text                       ( unpack )
+import           System.IO                      ( print
+                                                , putStrLn
+                                                )
 import           Types
 import           Util                           ( secondM )
 
@@ -35,6 +39,6 @@ run = do
   contents <- view (to appOptions) <&> filePath >>= readFileUtf8
   liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
     Left  s  -> print s
-    Right cu -> print cu
+    Right cu -> putStrLn . unwords $ map (unpack . writeFunction) cu
 
 
