@@ -24,6 +24,7 @@ dependencies:
   - rio >= 0.1.12.0
   - attoparsec
   - aeson
+  - interpolatedstring-perl6
 
 ghc-options:
   - -Wall
@@ -43,7 +44,7 @@ library:
     - happy
 
 executables:
-  curl-gen:
+  curlgen:
     main: Main.hs
     source-dirs: app
     dependencies:
@@ -56,7 +57,7 @@ executables:
       - -with-rtsopts=-N
 
 tests:
-  curl-gen-test:
+  curlgen-test:
     main: Spec.hs
     source-dirs: test
     dependencies:
