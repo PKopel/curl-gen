@@ -12,23 +12,30 @@ import           RIO
 import           RIO.Process
 import           Run
 
+options :: String -> IO (Options, ())
+options version = simpleOptions
+  version
+  ("curl-gen " <> version)
+  "Generate bash scripts from curl commands"
+  (   Options
+  <$> strArgument (metavar "FILE" <> help "File containing curl commands.")
+  <*> switch (long "verbose" <> short 'v' <> help "Verbose output?")
+  <*> strOption
+        (  long "output"
+        <> short 'o'
+        <> metavar "OUTPUT_FILE"
+        <> value ""
+        <> help "Path to output"
+        )
+  )
+  empty
+
 main :: IO ()
 main = do
   let version = $(simpleVersion Paths_curl_gen.version)
-  (options, ()) <- simpleOptions
-    version
-    ("curl-gen " <> version)
-    "Generate bash scripts from curl commands"
-    (   Options
-    <$> strArgument (metavar "FILE" <> help "File containing curl commands.")
-    <*> switch (long "verbose" <> short 'v' <> help "Verbose output?")
-    )
-    empty
-  lo <- logOptionsHandle stderr (optionsVerbose options)
-  pc <- mkDefaultProcessContext
+  (ops, ()) <- options version
+  lo        <- logOptionsHandle stderr (optionsVerbose ops)
+  pc        <- mkDefaultProcessContext
   withLogFunc lo $ \lf ->
-    let app = App { appLogFunc        = lf
-                  , appProcessContext = pc
-                  , appOptions        = options
-                  }
+    let app = App { appLogFunc = lf, appProcessContext = pc, appOptions = ops }
     in  runRIO app run

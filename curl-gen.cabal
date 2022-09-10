@@ -48,7 +48,7 @@ library
     , rio >=0.1.12.0
   default-language: Haskell2010
 
-executable curlgen
+executable curl-gen
   main-is: Main.hs
   other-modules:
       Paths_curl_gen
@@ -65,7 +65,7 @@ executable curlgen
     , rio >=0.1.12.0
   default-language: Haskell2010
 
-test-suite curlgen-test
+test-suite curl-gen-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:

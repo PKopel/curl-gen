@@ -44,7 +44,7 @@ library:
     - happy
 
 executables:
-  curlgen:
+  curl-gen:
     main: Main.hs
     source-dirs: app
     dependencies:
@@ -57,7 +57,7 @@ executables:
       - -with-rtsopts=-N
 
 tests:
-  curlgen-test:
+  curl-gen-test:
     main: Spec.hs
     source-dirs: test
     dependencies:

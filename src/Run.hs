@@ -1,5 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Run
   ( run
@@ -7,14 +8,13 @@ module Run
 
 import           App
 import           Bash.Function                  ( writeFunction )
+import           Bash.Template
 import           Data.Attoparsec.Text    hiding ( D )
 import           Parser
 import           RIO
 import           RIO.List
 import           RIO.Text                       ( unpack )
-import           System.IO                      ( print
-                                                , putStrLn
-                                                )
+import           System.IO                      ( putStrLn )
 import           Types
 import           Util                           ( secondM )
 
@@ -37,8 +37,12 @@ curlOps (A _ : _   ) _ = Left "Too many urls"
 run :: RIO App ()
 run = do
   contents <- view (to appOptions) <&> filePath >>= readFileUtf8
+  outFun   <- view (to appOptions) <&> outputPath <&> \case
+    ""    -> putStrLn . unpack
+    other -> writeFileUtf8 other
   liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
-    Left  s  -> print s
-    Right cu -> putStrLn . unwords $ map (unpack . writeFunction) cu
+    Left  s  -> putStrLn s
+    Right cu -> outFun . script $ map writeFunction cu
+
 
 

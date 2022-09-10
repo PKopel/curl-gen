@@ -30,10 +30,10 @@ import           Util
 writeFunction :: ([Text], Curl) -> Text
 writeFunction (txts, c) = [qc|
 function {intercalate "_" txts}() \{
-    local HOST=$\{ADDRESS:-'{host (url c)}'\}
+    local HOST=$\{ADDRESS:-'{host (url c)}'}
     local DATA='{showData (dta c)}'
     {writeCurl c}
-\}
+}
 |]
  where
   wrap s = "{\n" <> s <> "\n}"
@@ -49,7 +49,7 @@ writeJsonObj n parent pairs =
 
 writeJsonObjField :: Int -> Text -> (Text, Value) -> Text
 writeJsonObjField n parent (name, val) =
-  [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'\}'|]
+  [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
   where fieldPath = parent <> "." <> name
 
 writeJsonArray :: Int -> Text -> [(Integer, Value)] -> Text
@@ -58,7 +58,7 @@ writeJsonArray n parent pairs =
 
 writeJsonArrayField :: Int -> Text -> (Integer, Value) -> Text
 writeJsonArrayField n parent (idx, val) =
-  [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'\}'|]
+  [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
   where fieldPath = parent <> "(" <> pack (show idx) <> ")"
 
 writeJsonVal :: Int -> Text -> Value -> Text
@@ -75,9 +75,9 @@ writeJsonVal n fieldPath val = case val of
 
 writeCurl :: Curl -> Text
 writeCurl (Curl (URL p _ a) o hs _) = intercalate
-  " \\\n\t"
-  (fstLine : urlLine : "--data \"$DATA\"" : map hdrLine hs)
+  " \\\n    "
+  (fstLine : urlLine : "    --data \"$DATA\"" : map hdrLine hs)
  where
   fstLine = unwords ("$CURL" : o)
-  urlLine = [qc|"{p}://$HOST{a}"|]
-  hdrLine (H h) = [qc|--header "{h}"|]
+  urlLine = [qc|    "{p}://$HOST{a}"|]
+  hdrLine (H h) = [qc|    --header "{h}"|]

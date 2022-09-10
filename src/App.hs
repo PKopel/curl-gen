@@ -18,8 +18,9 @@ import           RIO.Process                    ( HasProcessContext(..)
 
 -- | Command line arguments
 data Options = Options
-    { filePath       :: String
+    { filePath       :: !String
     , optionsVerbose :: !Bool
+    , outputPath     :: !String
     }
 
 data App = App
