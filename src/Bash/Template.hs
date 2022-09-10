@@ -11,9 +11,7 @@ import           Text.InterpolatedString.Perl6  ( q
                                                 , qc
                                                 )
 import           RIO                            ( Text )
-import           RIO.Text                       ( intercalate
-                                                , unlines
-                                                )
+import           RIO.Text                       ( unlines )
 
 header :: Text
 header = [q|#!/usr/bin/env bash
@@ -80,7 +78,7 @@ functions :: [Text] -> Text
 functions fs = [qc|
 ################### auto-generated functions start ###################
 
-{intercalate "\n\n" fs}
+{unlines fs}
 
 #################### auto-generated functions end ####################
 |]
