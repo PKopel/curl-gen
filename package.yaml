@@ -25,6 +25,7 @@ dependencies:
   - attoparsec
   - aeson
   - interpolatedstring-perl6
+  - unix
 
 ghc-options:
   - -Wall
@@ -39,9 +40,6 @@ ghc-options:
 
 library:
   source-dirs: src
-  build-tools:
-    - alex
-    - happy
 
 executables:
   curl-gen:

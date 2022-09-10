@@ -8,13 +8,16 @@ module Run
 
 import           App
 import           Bash.Function                  ( writeFunction )
-import           Bash.Template
-import           Data.Attoparsec.Text    hiding ( D )
-import           Parser
+import           Bash.Template                  ( script )
+import           Data.Attoparsec.Text           ( parseOnly )
+import           Parser                         ( file )
 import           RIO
-import           RIO.List
+import           RIO.List                       ( sort )
 import           RIO.Text                       ( unpack )
 import           System.IO                      ( putStrLn )
+import           System.Posix.Files             ( ownerModes
+                                                , setFileMode
+                                                )
 import           Types
 import           Util                           ( secondM )
 
@@ -39,7 +42,9 @@ run = do
   contents <- view (to appOptions) <&> filePath >>= readFileUtf8
   outFun   <- view (to appOptions) <&> outputPath <&> \case
     ""    -> putStrLn . unpack
-    other -> writeFileUtf8 other
+    other -> \txt -> do
+      writeFileUtf8 other txt
+      setFileMode other ownerModes
   liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
     Left  s  -> putStrLn s
     Right cu -> outFun . script $ map writeFunction cu
