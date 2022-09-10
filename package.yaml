@@ -24,6 +24,7 @@ dependencies:
   - rio >= 0.1.12.0
   - attoparsec
   - aeson
+  - interpolatedstring-perl6
 
 ghc-options:
   - -Wall
