@@ -1,9 +1,8 @@
-# test example2.1
-curl -X PUT -k -v https://test.com/path/1 \
+# test put
+curl -X PUT -k -v https://test.com/path \
     --header 'Accept: application/json' \
-    --data '{"test":"1"}'
+    --data '{"obj":{"string":"data"},"array":[1,null]}'
 
-# test example2.2
-curl -X PUT -k -v https://test.com/path/2 \
-    --header 'Accept: application/json' \
-    --data '{"test":"2"}'
+# test get
+curl -X GET -k -v https://test.com/path/2 \
+    --header 'Accept: application/json'

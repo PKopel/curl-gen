@@ -23,7 +23,7 @@ import           Util                           ( secondM )
 
 curlCmd :: [Argument] -> Either String Curl
 curlCmd args = case sort args of
-  (A u : o) -> curlOps o $ Curl u [] [] (D "")
+  (A u : o) -> curlOps o $ Curl u [] [] NoData
   _         -> Left "No url"
 
 curlOps :: [Argument] -> Curl -> Either String Curl

@@ -11,10 +11,6 @@ module Types
   ) where
 
 import           Data.Semigroup                 ( )
-import           RIO.Text                     as T
-                                         hiding ( intercalate
-                                                , map
-                                                )
 import           RIO                            ( ($)
                                                 , (<>)
                                                 , Eq
@@ -23,6 +19,10 @@ import           RIO                            ( ($)
                                                 , map
                                                 )
 import           RIO.List                       ( intercalate )
+import           RIO.Text                      as T
+                                         hiding ( intercalate
+                                                , map
+                                                )
 
 
 data Argument = A URL | P T.Text T.Text | F  T.Text deriving (Show, Eq, Ord)
@@ -30,9 +30,10 @@ data Argument = A URL | P T.Text T.Text | F  T.Text deriving (Show, Eq, Ord)
 type Option = T.Text
 
 
-newtype Dta = D T.Text
+data Dta = D T.Text | NoData
 instance Show Dta where
-  show (D h) = T.unpack $ "--data '" <> h <> "'"
+  show (D h)  = T.unpack $ "--data '" <> h <> "'"
+  show NoData = ""
 
 newtype Header = H T.Text
 

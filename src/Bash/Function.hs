@@ -37,8 +37,9 @@ function {intercalate "_" txts}() \{
 |]
  where
   wrap s = "{\n" <> s <> "\n}"
-  showData (D d) =
-    maybe d (wrap . writeJsonObj 0 "" . HM.toList) (decodeText d)
+  showData dt = case dt of
+    D d    -> maybe d (wrap . writeJsonObj 0 "" . HM.toList) (decodeText d)
+    NoData -> ""
 
 decodeText :: Text -> Maybe Object
 decodeText = decode . fromStrict . encodeUtf8
@@ -74,10 +75,12 @@ writeJsonVal n fieldPath val = case val of
   Null       -> "null"
 
 writeCurl :: Curl -> Text
-writeCurl (Curl (URL p _ a) o hs _) = intercalate
+writeCurl (Curl (URL p _ a) o hs dt) = intercalate
   " \\\n    "
-  (fstLine : urlLine : "    --data \"$DATA\"" : map hdrLine hs)
+  (fstLine : urlLine : dtaLine dt : map hdrLine hs)
  where
   fstLine = unwords ("$CURL" : o)
   urlLine = [qc|    "{p}://$HOST{a}"|]
+  dtaLine (D _)  = "    --data \"$DATA\""
+  dtaLine NoData = ""
   hdrLine (H h) = [qc|    --header "{h}"|]
