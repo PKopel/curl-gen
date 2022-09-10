@@ -9,3 +9,5 @@ and this project adheres to the
 ## Unreleased
 
 ## 0.1.0.0 - YYYY-MM-DD
+
+First working version, converting .txt files to bash scripts.
