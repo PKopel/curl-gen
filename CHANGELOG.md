@@ -8,9 +8,11 @@ and this project adheres to the
 
 ## Unreleased
 
+## 0.2.0
+
 - `-t|--threads` flag in generated scripts
 - support for path parameters
 
-## 0.1.0.0 - YYYY-MM-DD
+## 0.1.0
 
 First working version, converting .txt files to bash scripts.
