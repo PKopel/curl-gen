@@ -44,7 +44,7 @@ host :: Parser Text
 host = many (letter <|> digit <|> oneOf "$._") <&> pack
 
 path :: Parser Text
-path = many (letter <|> digit <|> oneOf "$/?%=_.") <&> pack
+path = many (letter <|> digit <|> oneOf "$/?%=_.{}") <&> pack
 
 url :: Parser URL
 url =
