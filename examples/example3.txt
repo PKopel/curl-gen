@@ -1,0 +1,16 @@
+# test put
+curl -X PUT -k -v https://test.com/{path} \
+    --header 'Accept: application/json' \
+    --data '{
+    "obj": {
+        "string":"data"
+    },
+    "array": [
+        1,
+        null
+    ]
+}'
+
+# test get
+curl -X GET -k -v https://test.com/{path}/{id} \
+    --header 'Accept: application/json'

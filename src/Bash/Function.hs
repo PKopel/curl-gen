@@ -19,6 +19,7 @@ import           RIO.Text                       ( intercalate
                                                 , pack
                                                 , unwords
                                                 )
+import           RIO.Text.Partial               ( replace )
 import           RIO.Vector                    as V
                                          hiding ( map
                                                 , zip
@@ -80,7 +81,10 @@ writeCurl (Curl (URL p _ a) o hs dt) = intercalate
   (fstLine : urlLine : dtaLine dt : map hdrLine hs)
  where
   fstLine = unwords ("$CURL" : o)
-  urlLine = [qc|    "{p}://$HOST{a}"|]
+  urlLine = [qc|    "{p}://$HOST{writePath a}"|]
   dtaLine (D _)  = "    --data \"$DATA\""
   dtaLine NoData = ""
   hdrLine (H h) = [qc|    --header "{h}"|]
+
+writePath :: Text -> Text
+writePath = replace "}" "']}" . replace "{" "${PATH_PARAMS['--"
