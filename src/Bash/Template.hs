@@ -55,7 +55,21 @@ function erro() {
 print_usage :: Text
 print_usage = [q|
 function print_usage() {
-    echo -e "Usage: $SCRIPT_NAME <command> [-h|--help] [-q|--quiet] [--dry-run] [--set <values>] "
+    echo -e "Usage: $SCRIPT_NAME <command> [-h|--help] [-q|--quiet] [--dry-run] [-f|--file <file path>] [--set <values>]
+Options:
+    -h | --help
+            print this message
+    -q | --quiet
+            turn off logging
+    --dry-run
+            display curl command instead of running it
+    -f | --file <file path>
+            use contents of <file path> as call data
+    --set <values>
+            replace fields in data object with provided values, e.g.
+            --set '.test' '"asdfgh"' sets field test of data object
+            to value "asdfgh"
+"
 }
 |]
 
