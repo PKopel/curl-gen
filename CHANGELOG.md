@@ -8,6 +8,10 @@ and this project adheres to the
 
 ## Unreleased
 
+## 0.3.0
+
+- add support for loading data from file
+
 ## 0.2.0
 
 - `-t|--threads` flag in generated scripts
