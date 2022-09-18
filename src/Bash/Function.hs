@@ -32,7 +32,12 @@ writeFunction :: ([Text], Curl) -> Text
 writeFunction (txts, c) = [qc|
 function {intercalate "_" txts}() \{
     local HOST=$\{ADDRESS:-'{host (url c)}'}
-    local DATA='{showData (dta c)}'
+    local DATA
+    if [[ -n "$\{FILE_PATH}" ]]; then
+        DATA="$(cat $\{FILE_PATH})"
+    else
+        DATA='{showData (dta c)}'
+    fi
     {writeCurl c}
 }
 |]
