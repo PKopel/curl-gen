@@ -114,6 +114,10 @@ while [[ "$#" -gt 0 ]]; do
         THREADS="$1"
         shift
         ;;
+    --file | -f)
+    	FILE_PATH="$1"
+    	shift
+    	;;
     --set)
         read_values $@
         break

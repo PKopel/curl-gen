@@ -76,7 +76,7 @@ jobs:
       - name: Build binary
         run: |
           mkdir bin
-          cabal install exe:curl-gen --install-method=copy --overwrite-policy=always --installdir=bin
+          cabal install exe:curl-gen --install-method=copy --overwrite-policy=always --installdir=bin --enable-executable-stripping --enable-library-stripping
 
       - name: Compress binary
         uses: svenstaro/upx-action@2.0.1
