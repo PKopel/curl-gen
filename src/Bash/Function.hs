@@ -28,6 +28,7 @@ import           Text.InterpolatedString.Perl6  ( qc )
 import           Types
 import           Util
 
+
 writeFunction :: ([Text], Curl) -> Text
 writeFunction (txts, c) = [qc|
 function {intercalate "_" txts}() \{
@@ -55,18 +56,32 @@ writeJsonObj n parent pairs =
   intercalate ",\n" $ map (writeJsonObjField (n + 1) parent) pairs
 
 writeJsonObjField :: Int -> Text -> (Text, Value) -> Text
-writeJsonObjField n parent (name, val) =
-  [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
-  where fieldPath = parent <> "." <> name
+writeJsonObjField n parent (name, val) = case val of
+  Object _ -> node
+  Array  _ -> node
+  _flat    -> leaf
+ where
+  node
+    = [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
+  leaf
+    = [qc|{indent n}"{name}":'$(eval $\{VALUES["{fieldPath}"]:-'echo {writeJsonVal n fieldPath val}'})'|]
+  fieldPath = parent <> "." <> name
 
 writeJsonArray :: Int -> Text -> [(Integer, Value)] -> Text
 writeJsonArray n parent pairs =
   intercalate ",\n" $ map (writeJsonArrayField (n + 1) parent) pairs
 
 writeJsonArrayField :: Int -> Text -> (Integer, Value) -> Text
-writeJsonArrayField n parent (idx, val) =
-  [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
-  where fieldPath = parent <> "(" <> pack (show idx) <> ")"
+writeJsonArrayField n parent (idx, val) = case val of
+  Object _ -> node
+  Array  _ -> node
+  _flat    -> leaf
+ where
+  node
+    = [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
+  leaf
+    = [qc|{indent n}'$(eval $\{VALUES["{fieldPath}"]:-'echo {writeJsonVal n fieldPath val}'})'|]
+  fieldPath = parent <> "(" <> pack (show idx) <> ")"
 
 writeJsonVal :: Int -> Text -> Value -> Text
 writeJsonVal n fieldPath val = case val of
@@ -75,7 +90,7 @@ writeJsonVal n fieldPath val = case val of
   Array vec ->
     let zipped = zip [0 ..] (V.toList vec)
     in  "[\n" <> writeJsonArray n fieldPath zipped <> "\n" <> indent n <> "]"
-  String txt -> "\"" <> txt <> "\""
+  String txt -> "\\\"" <> txt <> "\\\""
   Number sci -> pack $ show sci
   Bool   b   -> pack $ show b
   Null       -> "null"

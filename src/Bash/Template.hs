@@ -77,14 +77,18 @@ read_values :: Text
 read_values = [q|
 declare -A VALUES
 
-# usage: read_values <path> <value> ...;
+function second() {
+    if [[ "$#" == 2 ]]; then
+        echo $2
+    else
+        echo $(eval $1)
+    fi
+}
+
+# usage: read_values <path> <value>;
 function read_values() {
     local FIELD_PATH=$(echo $1 | sed 's/\[/\(/g' - | sed 's/\]/\)/g' - )
-    while [[ "$#" -gt 0 ]]; do
-        VALUES["$FIELD_PATH"]="$2"
-        shift
-        shift
-    done
+    VALUES["$FIELD_PATH"]="second 'od -vAn -N2 -tu2 < /dev/random' $2"
 }
 |]
 
@@ -132,9 +136,18 @@ while [[ "$#" -gt 0 ]]; do
     	FILE_PATH="$1"
     	shift
     	;;
+    --rand)
+        while [[ "$1" && ! "$1" == -* ]]; do
+            read_values "$1"
+            shift
+        done
+        ;; 
     --set)
-        read_values $@
-        break
+        while [[ "$1" && ! "$1" == -* ]]; do
+            read_values "$1" "$2"
+            shift
+            shift
+        done
         ;;
     --*)
         PATH_PARAMS["$OPTION"]="$1"
@@ -147,7 +160,7 @@ done
 
 FUNCTION=$( echo "${COMMAND[*]}" | sed 's| |_|g' - )
 
-if [ $(type -t "$FUNCTION") == function ]; then
+if [ "$(type -t "$FUNCTION")" == function ]; then
     for T in $(seq 1 $THREADS); do
         $FUNCTION &
     done
