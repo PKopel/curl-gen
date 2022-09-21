@@ -3,6 +3,7 @@
 module App
     ( App(..)
     , Options(..)
+    , ScriptOptions(..)
     ) where
 
 import           RIO                            ( Bool
@@ -18,9 +19,15 @@ import           RIO.Process                    ( HasProcessContext(..)
 
 -- | Command line arguments
 data Options = Options
-    { filePath       :: !String
-    , optionsVerbose :: !Bool
-    , outputPath     :: !String
+    { filePath      :: !String
+    , scriptOptions :: !ScriptOptions
+    , verbose       :: !Bool
+    , outputPath    :: !String
+    }
+
+data ScriptOptions = ScriptOptions
+    { threads :: !Bool
+    , random  :: !Bool
     }
 
 data App = App

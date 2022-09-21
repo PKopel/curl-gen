@@ -19,6 +19,16 @@ options version = simpleOptions
   "Generate bash scripts from curl commands"
   (   Options
   <$> strArgument (metavar "FILE" <> help "File containing curl commands.")
+  <*> (   ScriptOptions
+      <$> switch
+            (long "threads" <> short 't' <> help
+              "Make multi-threaded script."
+            )
+      <*> switch
+            (long "random" <> short 'r' <> help
+              "Include code for random values."
+            )
+      )
   <*> switch (long "verbose" <> short 'v' <> help "Verbose output?")
   <*> strOption
         (  long "output"
@@ -34,7 +44,7 @@ main :: IO ()
 main = do
   let version = $(simpleVersion Paths_curl_gen.version)
   (ops, ()) <- options version
-  lo        <- logOptionsHandle stderr (optionsVerbose ops)
+  lo        <- logOptionsHandle stderr (verbose ops)
   pc        <- mkDefaultProcessContext
   withLogFunc lo $ \lf ->
     let app = App { appLogFunc = lf, appProcessContext = pc, appOptions = ops }
