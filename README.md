@@ -6,8 +6,13 @@ Program generating bash scripts from lists of curl commands.
 
 1. Run `stack install` to build and install `curl-gen` executable.
 2. Prepare a txt file with curl commands (like in [examples](examples))
-3. Run `curl-gen <path to .txt file>` (writes results to stdout) or `curl-gen <path to .txt file> -o script.sh`
+3. Run `curl-gen <path to .txt file>` (writes results to stdout) or `curl-gen <path to .txt file> -o script.sh` ([example result](examples/example3.sh))
 4. To learn more about options run `curl-gen --help`
+
+### Options
+
+- `-r|--random` (optional) Include random values generator in the output script
+- `-t|--threads` (optional) Make the output script multi-threaded (able to run multiple calls at the same time)
 
 ### Input file format
 

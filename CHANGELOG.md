@@ -8,6 +8,10 @@ and this project adheres to the
 
 ## Unreleased
 
+## 0.4.0
+
+- add support forgenerating random values
+
 ## 0.3.0
 
 - add support for loading data from file

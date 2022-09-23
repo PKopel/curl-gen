@@ -28,8 +28,10 @@ import           Text.InterpolatedString.Perl6  ( qc )
 import           Types
 import           Util
 
-writeFunction :: ([Text], Curl) -> Text
-writeFunction (txts, c) = [qc|
+data FunctionOptions = FunOpts !Bool !Int
+
+writeFunction :: Bool -> ([Text], Curl) -> Text
+writeFunction r (txts, c) = [qc|
 function {intercalate "_" txts}() \{
     local HOST=$\{ADDRESS:-'{host (url c)}'}
     local DATA
@@ -42,43 +44,59 @@ function {intercalate "_" txts}() \{
 }
 |]
  where
+  opts = FunOpts r 0
   wrap s = "{\n" <> s <> "\n}"
   showData dt = case dt of
-    D d    -> maybe d (wrap . writeJsonObj 0 "" . HM.toList) (decodeText d)
+    D d    -> maybe d (wrap . writeJsonObj opts "" . HM.toList) (decodeText d)
     NoData -> ""
 
 decodeText :: Text -> Maybe Object
 decodeText = decode . fromStrict . encodeUtf8
 
-writeJsonObj :: Int -> Text -> [(Text, Value)] -> Text
-writeJsonObj n parent pairs =
-  intercalate ",\n" $ map (writeJsonObjField (n + 1) parent) pairs
+writeJsonObj :: FunctionOptions -> Text -> [(Text, Value)] -> Text
+writeJsonObj (FunOpts r n) parent pairs =
+  intercalate ",\n" $ map (writeJsonObjField (FunOpts r $ n + 1) parent) pairs
 
-writeJsonObjField :: Int -> Text -> (Text, Value) -> Text
-writeJsonObjField n parent (name, val) =
-  [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
-  where fieldPath = parent <> "." <> name
+writeJsonObjField :: FunctionOptions -> Text -> (Text, Value) -> Text
+writeJsonObjField op@(FunOpts r n) parent (name, val) = case val of
+  Object _ -> node
+  Array  _ -> node
+  _flat    -> if r then leaf else node
+ where
+  node
+    = [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal op fieldPath val}'}'|]
+  leaf
+    = [qc|{indent n}"{name}":'$(eval $\{VALUES["{fieldPath}"]:-'echo {writeJsonVal op fieldPath val}'})'|]
+  fieldPath = parent <> "." <> name
 
-writeJsonArray :: Int -> Text -> [(Integer, Value)] -> Text
-writeJsonArray n parent pairs =
-  intercalate ",\n" $ map (writeJsonArrayField (n + 1) parent) pairs
+writeJsonArray :: FunctionOptions -> Text -> [(Integer, Value)] -> Text
+writeJsonArray (FunOpts r n) parent pairs =
+  intercalate ",\n" $ map (writeJsonArrayField (FunOpts r $ n + 1) parent) pairs
 
-writeJsonArrayField :: Int -> Text -> (Integer, Value) -> Text
-writeJsonArrayField n parent (idx, val) =
-  [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal n fieldPath val}'}'|]
-  where fieldPath = parent <> "(" <> pack (show idx) <> ")"
+writeJsonArrayField :: FunctionOptions -> Text -> (Integer, Value) -> Text
+writeJsonArrayField op@(FunOpts r n) parent (idx, val) = case val of
+  Object _ -> node
+  Array  _ -> node
+  _flat    -> if r then leaf else node
+ where
+  node
+    = [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal op fieldPath val}'}'|]
+  leaf
+    = [qc|{indent n}'$(eval $\{VALUES["{fieldPath}"]:-'echo {writeJsonVal op fieldPath val}'})'|]
+  fieldPath = parent <> "(" <> pack (show idx) <> ")"
 
-writeJsonVal :: Int -> Text -> Value -> Text
-writeJsonVal n fieldPath val = case val of
+writeJsonVal :: FunctionOptions -> Text -> Value -> Text
+writeJsonVal op@(FunOpts r n) fieldPath val = case val of
   Object hm ->
-    "{\n" <> writeJsonObj n fieldPath (HM.toList hm) <> "\n" <> indent n <> "}"
+    "{\n" <> writeJsonObj op fieldPath (HM.toList hm) <> "\n" <> indent n <> "}"
   Array vec ->
     let zipped = zip [0 ..] (V.toList vec)
-    in  "[\n" <> writeJsonArray n fieldPath zipped <> "\n" <> indent n <> "]"
-  String txt -> "\"" <> txt <> "\""
+    in  "[\n" <> writeJsonArray op fieldPath zipped <> "\n" <> indent n <> "]"
+  String txt -> qt <> txt <> qt
   Number sci -> pack $ show sci
   Bool   b   -> pack $ show b
   Null       -> "null"
+  where qt = if r then "\\\"" else "\""
 
 writeCurl :: Curl -> Text
 writeCurl (Curl (URL p _ a) o hs dt) = intercalate

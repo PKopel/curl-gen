@@ -6,7 +6,10 @@ module Run
   ( run
   ) where
 
-import           App
+import           App                            ( App(appOptions)
+                                                , Options(..)
+                                                , ScriptOptions(random)
+                                                )
 import           Bash.Function                  ( writeFunction )
 import           Bash.Template                  ( script )
 import           Data.Attoparsec.Text           ( parseOnly )
@@ -39,15 +42,17 @@ curlOps (A _ : _   ) _ = Left "Too many urls"
 
 run :: RIO App ()
 run = do
-  contents <- view (to appOptions) <&> filePath >>= readFileUtf8
-  outFun   <- view (to appOptions) <&> outputPath <&> \case
+  contents   <- view (to appOptions) <&> filePath >>= readFileUtf8
+  scriptOpts <- view (to appOptions) <&> scriptOptions
+  outFun     <- view (to appOptions) <&> outputPath <&> \case
     ""    -> putStrLn . unpack
     other -> \txt -> do
       writeFileUtf8 other txt
       setFileMode other ownerModes
   liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
-    Left  s  -> putStrLn s
-    Right cu -> outFun . script $ map writeFunction cu
+    Left s -> putStrLn s
+    Right cu ->
+      outFun . script scriptOpts $ map (writeFunction $ random scriptOpts) cu
 
 
 
