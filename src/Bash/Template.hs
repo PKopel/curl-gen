@@ -28,7 +28,6 @@ function print_usage() \{
 Options:
     -h | --help
             print this message
-
 {if threads opts then thrd else ""}
     --dry-run
             display curl command instead of running it
@@ -113,9 +112,6 @@ while [[ "$#" -gt 0 ]]; do
     case $OPTION in
     --dry-run)
         CURL="echo curl"
-        ;;
-    --quiet | -q)
-        QUIET="true"
         ;;
     --help | -h)
         print_usage
