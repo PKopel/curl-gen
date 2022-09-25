@@ -110,4 +110,4 @@ writeCurl (Curl (URL p _ a) o hs dt) = intercalate
   hdrLine (H h) = [qc|    --header "{h}"|]
 
 writePath :: Text -> Text
-writePath = replace "}" "']}" . replace "{" "${PATH_PARAMS['--"
+writePath = replace "}" "']}" . replace "{" "${VALUES['"

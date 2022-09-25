@@ -19,8 +19,13 @@ Options:
 
     --set <paths=values>
             replace fields in data object with provided values, e.g.
-            --set '.test="asdfgh"' sets field test of data object
-            to value "asdfgh"
+            --set '.test=\"asdfgh\"' sets field test of data object
+            to value \"asdfgh\"
+            
+    --path <paths=values>
+            replace placeholders in url path with provided values, e.g.
+            --path 'test=asdfgh' changes url 'http://localhost/{test}'
+            to 'http://localhost/asdfgh'
 "
 }
 
@@ -86,7 +91,6 @@ CURL=$(which curl)
 COMMAND=()
 ADDRESS="example.com"
 THREADS=1
-declare -A PATH_PARAMS
 
 while [[ "$#" -gt 0 ]]; do
     OPTION="$1"
@@ -112,17 +116,13 @@ while [[ "$#" -gt 0 ]]; do
     	shift
     	;;
 
-    --set)
+    --set | --path)
         while [[ "$1" && ! "$1" == -* ]]; do
             FIELD="$(echo $1 | cut -d= -f1)"
             VALUE="$(echo $1 | cut -d= -f2)"
             read_values "$FIELD" "$VALUE"
             shift
         done
-        ;;
-    --*)
-        PATH_PARAMS["$OPTION"]="$1"
-        shift
         ;;
     *)
         COMMAND+=("$OPTION")
