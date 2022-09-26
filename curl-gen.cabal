@@ -29,6 +29,8 @@ library
       Bash.Function
       Bash.Template
       Parser
+      Powershell.Function
+      Powershell.Template
       Run
       Types
       Util

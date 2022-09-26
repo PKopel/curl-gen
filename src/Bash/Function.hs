@@ -14,19 +14,21 @@ import           Data.Aeson                     ( Object
 import           RIO                     hiding ( unwords )
 import           RIO.ByteString.Lazy            ( fromStrict )
 import           RIO.HashMap                   as HM
-                                         hiding ( map )
+                                                ( toList )
 import           RIO.Text                       ( intercalate
                                                 , pack
                                                 , unwords
                                                 )
 import           RIO.Text.Partial               ( replace )
 import           RIO.Vector                    as V
-                                         hiding ( map
-                                                , zip
-                                                )
+                                                ( toList )
 import           Text.InterpolatedString.Perl6  ( qc )
-import           Types
-import           Util
+import           Types                          ( Curl(Curl, dta, url)
+                                                , Dta(D, NoData)
+                                                , Header(H)
+                                                , URL(URL, host)
+                                                )
+import           Util                           ( indent )
 
 data FunctionOptions = FunOpts !Bool !Int
 
