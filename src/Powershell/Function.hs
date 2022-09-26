@@ -3,9 +3,9 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-module Bash.Function
-  ( writeFunction
-  ) where
+module Powershell.Function
+    ( writeFunction
+    ) where
 
 import           App                            ( ScriptOptions(..) )
 import           RIO                            ( ($)
@@ -58,13 +58,13 @@ function {intercalate "-" txts} \{
     }
 }
 |]
- where
-  rand =
-    [q|
+  where
+    rand =
+        [q|
     [string[]]$rand,
 |] :: Text
-  thrd =
-    [q|
+    thrd =
+        [q|
     [int]$threads = 1,
 |] :: Text
 
@@ -76,10 +76,14 @@ writeData (D d) = [qc|'{d}' | ConvertFrom-Json -AsHashtable
 
 writeOpts :: Curl -> Text
 writeOpts (Curl _ os hs _) = [qc|@(
-        {unlines os}
-        {unlines $ map hdrLine hs}
+{unlines $ map opsLine os}
+{unlines $ map hdrLine hs}
+"$url"
+"--data '$data'"
     )|]
-  where hdrLine (H h) = [qc|"    --header '{h}'"|]
+  where
+    opsLine o = [qc|{o}|]
+    hdrLine (H h) = [qc|"--header '{h}'"|]
 
 writeUrl :: URL -> Text
 writeUrl (URL pr _ ph) = [qc|"{pr}://$addr{writePath ph}"|]

@@ -64,7 +64,7 @@ argument = skipSpaces *> (arg <|> param <|> flag)
  where
   name  = (<>) <$> many1 (char '-') <*> many letter <&> pack
   value = (:) <$> noneOf "-" <*> many1 (noneOf " ") <&> pack
-  param = P <$> name <*> (skipSpaces *> url <!> (string <|> value))
+  param = P <$> name <*> (skipSpaces *> (url <!> (string <|> value)))
   flag  = F <$> name
   arg   = A <$> url
 

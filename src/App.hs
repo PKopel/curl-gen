@@ -4,11 +4,14 @@ module App
     ( App(..)
     , Options(..)
     , ScriptOptions(..)
+    , ScriptLang(..)
     ) where
 
 import           RIO                            ( Bool
                                                 , HasLogFunc(..)
                                                 , LogFunc
+                                                , Read
+                                                , Show
                                                 , String
                                                 , lens
                                                 )
@@ -25,9 +28,12 @@ data Options = Options
     , outputPath    :: !String
     }
 
+data ScriptLang = Bash | Powershell | OsDefault deriving (Show, Read)
+
 data ScriptOptions = ScriptOptions
     { threads :: !Bool
     , random  :: !Bool
+    , lang    :: !ScriptLang
     }
 
 data App = App

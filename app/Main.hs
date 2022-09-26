@@ -9,6 +9,7 @@ import           App
 import           Options.Applicative.Simple
 import qualified Paths_curl_gen
 import           RIO
+import           RIO.Partial                    ( read )
 import           RIO.Process
 import           Run
 
@@ -28,6 +29,15 @@ options version = simpleOptions
             (long "random" <> short 'r' <> help
               "Include code for random values."
             )
+      <*> (read <$> strOption
+            (  long "lang"
+            <> short 'l'
+            <> metavar "LANGUAGE"
+            <> value "OsDefault"
+            <> help
+                 "Language for the output string (one of: Bash, Powershell, OsDefault)."
+            )
+          )
       )
   <*> switch (long "verbose" <> short 'v' <> help "Verbose output?")
   <*> strOption

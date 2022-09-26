@@ -21,7 +21,7 @@ Options:
             replace fields in data object with provided values, e.g.
             --set '.test=\"asdfgh\"' sets field test of data object
             to value \"asdfgh\"
-            
+
     --path <paths=values>
             replace placeholders in url path with provided values, e.g.
             --path 'test=asdfgh' changes url 'http://localhost/{test}'
