@@ -121,10 +121,15 @@ function test-put {
     )
 
     $values = Set-Values -set $set -rand $rand -path $path
+    
+    $setObject = ${function:Set-Object}.ToString()
 
-    $url = "https://$addr/$($values['path'])"
+    1..$threads | ForEach-Object -Parallel {
+        ${function:Set-Object} = $using:setObject
 
-    $data = '{
+        $url = "https://$using:addr/$($using:values['path'])"
+
+        $data = '{
     "obj": {
         "string":"data"
     },
@@ -133,10 +138,10 @@ function test-put {
         null
     ]
 }' | ConvertFrom-Json -AsHashtable 
-    | Set-Object -values $values
-    | ConvertTo-Json
+        | Set-Object -values $using:values
+        | ConvertTo-Json
 
-    $opts = @(
+        $opts = @(
 "-v"
 "-k"
 "-X PUT"
@@ -147,13 +152,14 @@ function test-put {
 "--data '$data'"
     )
 
-    if ($dryRun.IsPresent) {
-        $opts = $opts -join " "
-        Write-Output "curl $opts"
-    }
-    else {
-        curl @opts
-    }
+        if ($using:dryRun.IsPresent) {
+            $opts = $opts -join " "
+            Write-Output "curl $opts"
+        }
+        else {
+            curl @opts
+        }
+    } -AsJob | Wait-Job | Receive-Job
 }
 
 
@@ -175,12 +181,17 @@ function test-get {
     )
 
     $values = Set-Values -set $set -rand $rand -path $path
+    
+    $setObject = ${function:Set-Object}.ToString()
 
-    $url = "https://$addr/$($values['path'])/$($values['id'])"
+    1..$threads | ForEach-Object -Parallel {
+        ${function:Set-Object} = $using:setObject
 
-    $data = ''
+        $url = "https://$using:addr/$($using:values['path'])/$($using:values['id'])"
 
-    $opts = @(
+        $data = ''
+
+        $opts = @(
 "-v"
 "-k"
 "-X GET"
@@ -191,13 +202,14 @@ function test-get {
 "--data '$data'"
     )
 
-    if ($dryRun.IsPresent) {
-        $opts = $opts -join " "
-        Write-Output "curl $opts"
-    }
-    else {
-        curl @opts
-    }
+        if ($using:dryRun.IsPresent) {
+            $opts = $opts -join " "
+            Write-Output "curl $opts"
+        }
+        else {
+            curl @opts
+        }
+    } -AsJob | Wait-Job | Receive-Job
 }
 
 

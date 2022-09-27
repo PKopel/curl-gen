@@ -20,7 +20,7 @@ import           RIO.Text.Partial               ( replace )
 import           Text.InterpolatedString.Perl6  ( q
                                                 , qc
                                                 )
-import           Types                          ( Curl(Curl, dta, url)
+import           Types                          ( Curl(Curl)
                                                 , Dta(..)
                                                 , Header(H)
                                                 , URL(URL)
@@ -42,20 +42,7 @@ function {intercalate "-" txts} \{
     )
 
     $values = Set-Values -set $set -rand $rand -path $path
-
-    $url = {writeUrl $ url c}
-
-    $data = {writeData $ dta c}
-
-    $opts = {writeOpts c}
-
-    if ($dryRun.IsPresent) \{
-        $opts = $opts -join " "
-        Write-Output "curl $opts"
-    }
-    else \{
-        curl @opts
-    }
+    {(if threads opts then withThreads else withoutThreads) c}
 }
 |]
   where
@@ -68,11 +55,56 @@ function {intercalate "-" txts} \{
     [int]$threads = 1,
 |] :: Text
 
-writeData :: Dta -> Text
-writeData NoData = "''"
-writeData (D d) = [qc|'{d}' | ConvertFrom-Json -AsHashtable 
-    | Set-Object -values $values
-    | ConvertTo-Json|]
+withThreads :: Curl -> Text
+withThreads c@(Curl (URL pr _ ph) _ _ d) = [qc|
+    $setObject = $\{function:Set-Object}.ToString()
+
+    1..$threads | ForEach-Object -Parallel \{
+        $\{function:Set-Object} = $using:setObject
+
+        $url = "{pr}://$using:addr{writePath ph}"
+
+        $data = {writeData d}
+
+        $opts = {writeOpts c}
+
+        if ($using:dryRun.IsPresent) \{
+            $opts = $opts -join " "
+            Write-Output "curl $opts"
+        }
+        else \{
+            curl @opts
+        }
+    } -AsJob | Wait-Job | Receive-Job|]
+  where
+    writeData NoData = "''" :: Text
+    writeData (D v) = [qc|'{v}' | ConvertFrom-Json -AsHashtable 
+        | Set-Object -values $using:values
+        | ConvertTo-Json|]
+    writePath = replace "}" "'])" . replace "{" "$($using:values['"
+
+withoutThreads :: Curl -> Text
+withoutThreads c@(Curl (URL pr _ ph) _ _ d) = [qc|
+    $url = "{pr}://$addr{writePath ph}"
+
+    $data = {writeData d}
+
+    $opts = {writeOpts c}
+
+    if ($dryRun.IsPresent) \{
+        $opts = $opts -join " "
+        Write-Output "curl $opts"
+    }
+    else \{
+        curl @opts
+    }
+|]
+  where
+    writeData NoData = "''" :: Text
+    writeData (D v) = [qc|'{v}' | ConvertFrom-Json -AsHashtable 
+        | Set-Object -values $values
+        | ConvertTo-Json|]
+    writePath = replace "}" "'])" . replace "{" "$($values['"
 
 writeOpts :: Curl -> Text
 writeOpts (Curl _ os hs _) = [qc|@(
@@ -85,8 +117,4 @@ writeOpts (Curl _ os hs _) = [qc|@(
     opsLine o = [qc|{o}|]
     hdrLine (H h) = [qc|"--header '{h}'"|]
 
-writeUrl :: URL -> Text
-writeUrl (URL pr _ ph) = [qc|"{pr}://$addr{writePath ph}"|]
 
-writePath :: Text -> Text
-writePath = replace "}" "'])" . replace "{" "$($values['"

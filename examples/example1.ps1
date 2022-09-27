@@ -101,12 +101,12 @@ function test-example {
     )
 
     $values = Set-Values -set $set -rand $rand -path $path
-
+    
     $url = "https://$addr/path"
 
     $data = '{"obj":{"string":"data"},"array":[1,null]}' | ConvertFrom-Json -AsHashtable 
-    | Set-Object -values $values
-    | ConvertTo-Json
+        | Set-Object -values $values
+        | ConvertTo-Json
 
     $opts = @(
 "-v"
@@ -126,6 +126,7 @@ function test-example {
     else {
         curl @opts
     }
+
 }
 
 
