@@ -92,10 +92,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: echo "BINARY_PATH=./bin/curl-gen${{ env.EXT }}" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      # - name: Compress binary
-      #   uses: svenstaro/upx-action@2.0.1
-      #   with:
-      #     file: ./bin/curl-gen
+      - name: Compress binary
+        uses: svenstaro/upx-action@2.0.1
+        with:
+          file: ${{ env.BINARY_PATH }}
 
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
