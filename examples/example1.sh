@@ -18,7 +18,7 @@ Options:
             replace fields in data object with provided values, e.g.
             --set '.test=\"asdfgh\"' sets field test of data object
             to value \"asdfgh\"
-            
+
     --path <paths=values>
             replace placeholders in url path with provided values, e.g.
             --path 'test=asdfgh' changes url 'http://localhost/{test}'
@@ -42,7 +42,7 @@ function read_values() {
 
 
 function test_example() {
-    local HOST=${ADDRESS:-'test.com'}
+    local HOST=${ADDRESS:-'localhost:8008'}
     local DATA
     if [[ -n "${FILE_PATH}" ]]; then
         DATA="$(cat ${FILE_PATH})"
@@ -57,8 +57,8 @@ function test_example() {
     ]'}'
 }'
     fi
-    $CURL -k  -v -X  PUT \
-        "https://$HOST/path" \
+    $CURL -v -k -X PUT \
+        "http://$HOST/path" \
         --data "$DATA" \
         --header "Accept: application/json"
 }
@@ -71,7 +71,6 @@ function test_example() {
 CURL=$(which curl)
 
 COMMAND=()
-ADDRESS="example.com"
 THREADS=1
 
 while [[ "$#" -gt 0 ]]; do

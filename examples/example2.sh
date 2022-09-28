@@ -45,7 +45,7 @@ function read_values() {
 
 
 function test_put() {
-    local HOST=${ADDRESS:-'test.com'}
+    local HOST=${ADDRESS:-'localhost:8008'}
     local DATA
     if [[ -n "${FILE_PATH}" ]]; then
         DATA="$(cat ${FILE_PATH})"
@@ -60,23 +60,23 @@ function test_put() {
     ]'}'
 }'
     fi
-    $CURL -k  -v -X  PUT \
-        "https://$HOST/path" \
+    $CURL -v -k -X PUT \
+        "http://$HOST/path" \
         --data "$DATA" \
         --header "Accept: application/json"
 }
 
 
 function test_get() {
-    local HOST=${ADDRESS:-'test.com'}
+    local HOST=${ADDRESS:-'localhost:8008'}
     local DATA
     if [[ -n "${FILE_PATH}" ]]; then
         DATA="$(cat ${FILE_PATH})"
     else
         DATA=''
     fi
-    $CURL -k  -v -X  GET \
-        "https://$HOST/path/2" \
+    $CURL -v -k -X GET \
+        "http://$HOST/path/2" \
      \
         --header "Accept: application/json"
 }
@@ -89,7 +89,6 @@ function test_get() {
 CURL=$(which curl)
 
 COMMAND=()
-ADDRESS="example.com"
 THREADS=1
 
 while [[ "$#" -gt 0 ]]; do

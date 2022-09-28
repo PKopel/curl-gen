@@ -1,5 +1,5 @@
 # test put
-curl -X PUT -k -v https://test.com/{path} \
+curl -X PUT -k -v http://localhost:8008/{path} \
     --header 'Accept: application/json' \
     --data '{
     "obj": {
@@ -12,5 +12,5 @@ curl -X PUT -k -v https://test.com/{path} \
 }'
 
 # test get
-curl -X GET -k -v https://test.com/{path}/{id} \
+curl -X GET -k -v http://localhost:8008/{path}/{id} \
     --header 'Accept: application/json'

@@ -107,7 +107,7 @@ function test-put {
     param (
         [switch]$dryRun,
     
-        [string]$addr = "test.com",
+        [string]$addr = "localhost:8008",
     
     [int]$threads = 1,
 
@@ -127,7 +127,7 @@ function test-put {
     1..$threads | ForEach-Object -Parallel {
         ${function:Set-Object} = $using:setObject
 
-        $url = "https://$using:addr/$($using:values['path'])"
+        $url = "http://$using:addr/$($using:values['path'])"
 
         $data = '{
     "obj": {
@@ -157,7 +157,7 @@ function test-put {
             Write-Output "curl $opts"
         }
         else {
-            curl @opts
+            Invoke-Expression "curl $opts"
         }
     } -AsJob | Wait-Job | Receive-Job
 }
@@ -167,7 +167,7 @@ function test-get {
     param (
         [switch]$dryRun,
     
-        [string]$addr = "test.com",
+        [string]$addr = "localhost:8008",
     
     [int]$threads = 1,
 
@@ -187,7 +187,7 @@ function test-get {
     1..$threads | ForEach-Object -Parallel {
         ${function:Set-Object} = $using:setObject
 
-        $url = "https://$using:addr/$($using:values['path'])/$($using:values['id'])"
+        $url = "http://$using:addr/$($using:values['path'])/$($using:values['id'])"
 
         $data = ''
 
@@ -207,7 +207,7 @@ function test-get {
             Write-Output "curl $opts"
         }
         else {
-            curl @opts
+            Invoke-Expression "curl $opts"
         }
     } -AsJob | Wait-Job | Receive-Job
 }

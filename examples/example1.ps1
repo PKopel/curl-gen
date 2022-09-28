@@ -91,7 +91,7 @@ function test-example {
     param (
         [switch]$dryRun,
     
-        [string]$addr = "test.com",
+        [string]$addr = "localhost:8008",
     
         [string]$file,
     
@@ -102,7 +102,7 @@ function test-example {
 
     $values = Set-Values -set $set -rand $rand -path $path
     
-    $url = "https://$addr/path"
+    $url = "http://$addr/path"
 
     $data = '{"obj":{"string":"data"},"array":[1,null]}' | ConvertFrom-Json -AsHashtable 
         | Set-Object -values $values

@@ -93,7 +93,7 @@ function test-put {
     param (
         [switch]$dryRun,
     
-        [string]$addr = "test.com",
+        [string]$addr = "localhost:8008",
     
     [int]$threads = 1,
 
@@ -111,7 +111,7 @@ function test-put {
     1..$threads | ForEach-Object -Parallel {
         ${function:Set-Object} = $using:setObject
 
-        $url = "https://$using:addr/path"
+        $url = "http://$using:addr/path"
 
         $data = '{"obj":{"string":"data"},"array":[1,null]}' | ConvertFrom-Json -AsHashtable 
         | Set-Object -values $using:values
@@ -133,7 +133,7 @@ function test-put {
             Write-Output "curl $opts"
         }
         else {
-            curl @opts
+            Invoke-Expression "curl $opts"
         }
     } -AsJob | Wait-Job | Receive-Job
 }
@@ -143,7 +143,7 @@ function test-get {
     param (
         [switch]$dryRun,
     
-        [string]$addr = "test.com",
+        [string]$addr = "localhost:8008",
     
     [int]$threads = 1,
 
@@ -161,7 +161,7 @@ function test-get {
     1..$threads | ForEach-Object -Parallel {
         ${function:Set-Object} = $using:setObject
 
-        $url = "https://$using:addr/path/2"
+        $url = "http://$using:addr/path/2"
 
         $data = ''
 
@@ -181,7 +181,7 @@ function test-get {
             Write-Output "curl $opts"
         }
         else {
-            curl @opts
+            Invoke-Expression "curl $opts"
         }
     } -AsJob | Wait-Job | Receive-Job
 }

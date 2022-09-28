@@ -41,7 +41,7 @@ string :: Parser Text
 string = skipSpaces *> between '\'' <|> between '"' <&> pack
 
 host :: Parser Text
-host = many (letter <|> digit <|> oneOf "$._") <&> pack
+host = many (letter <|> digit <|> oneOf "$._:") <&> pack
 
 path :: Parser Text
 path = many (letter <|> digit <|> oneOf "$/?%=_.{}") <&> pack

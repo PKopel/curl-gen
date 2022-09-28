@@ -20,10 +20,10 @@ import           RIO.Text.Partial               ( replace )
 import           Text.InterpolatedString.Perl6  ( q
                                                 , qc
                                                 )
-import           Types                          ( Curl(Curl)
+import           Types                          ( Curl(..)
                                                 , Dta(..)
                                                 , Header(H)
-                                                , URL(URL)
+                                                , URL(..)
                                                 )
 
 writeFunction :: ScriptOptions -> ([Text], Curl) -> Text
@@ -32,7 +32,7 @@ function {intercalate "-" txts} \{
     param (
         [switch]$dryRun,
     
-        [string]$addr = "test.com",
+        [string]$addr = "{host . url $ c}",
     { if threads opts then thrd else ""}
         [string]$file,
     
@@ -73,7 +73,7 @@ withThreads c@(Curl (URL pr _ ph) _ _ d) = [qc|
             Write-Output "curl $opts"
         }
         else \{
-            curl @opts
+            Invoke-Expression "curl $opts"
         }
     } -AsJob | Wait-Job | Receive-Job|]
   where

@@ -25,7 +25,7 @@ Options:
             replace fields in data object with provided values, e.g.
             --set '.test=\"asdfgh\"' sets field test of data object
             to value \"asdfgh\"
-            
+
     --path <paths=values>
             replace placeholders in url path with provided values, e.g.
             --path 'test=asdfgh' changes url 'http://localhost/{test}'
@@ -64,7 +64,7 @@ function generate_values() {
 
 
 function test_put() {
-    local HOST=${ADDRESS:-'test.com'}
+    local HOST=${ADDRESS:-'localhost:8008'}
     local DATA
     if [[ -n "${FILE_PATH}" ]]; then
         DATA="$(cat ${FILE_PATH})"
@@ -79,23 +79,23 @@ function test_put() {
     ]'}'
 }'
     fi
-    $CURL -k  -v -X  PUT \
-        "https://$HOST/${VALUES['path']}" \
+    $CURL -v -k -X PUT \
+        "http://$HOST/${VALUES['path']}" \
         --data "$DATA" \
         --header "Accept: application/json"
 }
 
 
 function test_get() {
-    local HOST=${ADDRESS:-'test.com'}
+    local HOST=${ADDRESS:-'localhost:8008'}
     local DATA
     if [[ -n "${FILE_PATH}" ]]; then
         DATA="$(cat ${FILE_PATH})"
     else
         DATA=''
     fi
-    $CURL -k  -v -X  GET \
-        "https://$HOST/${VALUES['path']}/${VALUES['id']}" \
+    $CURL -v -k -X GET \
+        "http://$HOST/${VALUES['path']}/${VALUES['id']}" \
      \
         --header "Accept: application/json"
 }
@@ -108,7 +108,6 @@ function test_get() {
 CURL=$(which curl)
 
 COMMAND=()
-ADDRESS="example.com"
 THREADS=1
 
 while [[ "$#" -gt 0 ]]; do

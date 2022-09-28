@@ -107,7 +107,6 @@ main opts = [qc|
 CURL=$(which curl)
 
 COMMAND=()
-ADDRESS="example.com"
 THREADS=1
 
 while [[ "$#" -gt 0 ]]; do
