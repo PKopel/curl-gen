@@ -40,7 +40,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         cabal: ["3.2"]
         ghc: ["8.10.7"]
 
@@ -55,6 +55,12 @@ jobs:
       - if: matrix.os == 'macOS-latest'
         run: |
           echo "os_name=darwin" >> $GITHUB_ENV
+
+      - if: matrix.os == 'windows-latest'
+        run: |
+          echo "os_name=windows" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "EXT=.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+          (Get-Content ./curl-gen.cabal) | Select-String ", unix" -notMatch | Set-Content ./curl-gen.cabal
 
       - uses: haskell/actions/setup@v2
         name: Setup Haskell
@@ -78,10 +84,18 @@ jobs:
           mkdir bin
           cabal install exe:curl-gen --install-method=copy --overwrite-policy=always --installdir=bin --enable-executable-stripping --enable-library-stripping
 
-      - name: Compress binary
-        uses: svenstaro/upx-action@2.0.1
-        with:
-          file: ./bin/curl-gen
+      - name: Set binary path name
+        if: matrix.os != 'windows-latest'
+        run: echo "BINARY_PATH=./bin/curl-gen${{ env.EXT }}" >> $GITHUB_ENV
+
+      - name: Set binary path name
+        if: matrix.os == 'windows-latest'
+        run: echo "BINARY_PATH=./bin/curl-gen${{ env.EXT }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # - name: Compress binary
+      #   uses: svenstaro/upx-action@2.0.1
+      #   with:
+      #     file: ./bin/curl-gen
 
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -100,6 +114,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./bin/curl-gen
-          asset_name: curl-gen-amd64-${{ env.os_name }}
+          asset_path: ${{ env.BINARY_PATH }}
+          asset_name: curl-gen-amd64-${{ env.os_name }}${{ env.EXT }}
           asset_content_type: application/octet-stream

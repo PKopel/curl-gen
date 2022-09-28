@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE CPP #-}
 
 module Run
   ( run
@@ -26,9 +27,11 @@ import           RIO.List                       ( sort )
 import           RIO.Text                       ( unpack )
 import           System.IO                      ( putStrLn )
 import           System.Info                    ( os )
+#ifndef mingw32_HOST_OS
 import           System.Posix.Files             ( ownerModes
                                                 , setFileMode
                                                 )
+#endif
 import           Types
 import           Util                           ( secondM )
 
@@ -66,7 +69,9 @@ run = do
     ""    -> putStrLn . unpack
     other -> \txt -> do
       writeFileUtf8 other txt
-      when (os /= "mingw32") $ setFileMode other ownerModes
+#ifndef mingw32_HOST_OS
+      setFileMode other ownerModes
+#endif
   let (functionGen, scriptGen) = generators scriptOpts
   liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
     Left  s  -> putStrLn s
