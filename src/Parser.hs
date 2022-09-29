@@ -41,7 +41,7 @@ string :: Parser Text
 string = skipSpaces *> between '\'' <|> between '"' <&> pack
 
 host :: Parser Text
-host = many (letter <|> digit <|> oneOf "$._") <&> pack
+host = many (letter <|> digit <|> oneOf "$._:") <&> pack
 
 path :: Parser Text
 path = many (letter <|> digit <|> oneOf "$/?%=_.{}") <&> pack
@@ -64,7 +64,7 @@ argument = skipSpaces *> (arg <|> param <|> flag)
  where
   name  = (<>) <$> many1 (char '-') <*> many letter <&> pack
   value = (:) <$> noneOf "-" <*> many1 (noneOf " ") <&> pack
-  param = P <$> name <*> (skipSpaces *> url <!> (string <|> value))
+  param = P <$> name <*> (skipSpaces *> (url <!> (string <|> value)))
   flag  = F <$> name
   arg   = A <$> url
 

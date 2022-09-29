@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           curl-gen
-version:        0.4.0
+version:        0.5.0
 description:    Please see the README on Github at <https://github.com/PKopel/curl-gen#readme>
 homepage:       https://github.com/PKopel/curl-gen#readme
 bug-reports:    https://github.com/PKopel/curl-gen/issues
@@ -29,6 +29,8 @@ library
       Bash.Function
       Bash.Template
       Parser
+      Powershell.Function
+      Powershell.Template
       Run
       Types
       Util

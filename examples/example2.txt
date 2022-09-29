@@ -1,8 +1,8 @@
 # test put
-curl -X PUT -k -v https://test.com/path \
+curl -X PUT -k -v http://localhost:8008/path \
     --header 'Accept: application/json' \
     --data '{"obj":{"string":"data"},"array":[1,null]}'
 
 # test get
-curl -X GET -k -v https://test.com/path/2 \
+curl -X GET -k -v http://localhost:8008/path/2 \
     --header 'Accept: application/json'
