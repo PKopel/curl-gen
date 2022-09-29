@@ -8,9 +8,13 @@ and this project adheres to the
 
 ## Unreleased
 
+## 0.5.0
+
+- add support for Powershell scripts generation
+
 ## 0.4.0
 
-- add support forgenerating random values
+- add support for generating random values
 
 ## 0.3.0
 
