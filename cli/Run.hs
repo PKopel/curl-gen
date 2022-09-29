@@ -16,14 +16,12 @@ import           Bash.Function                 as BashF
                                                 ( writeFunction )
 import           Bash.Template                 as BashT
                                                 ( script )
-import           Data.Attoparsec.Text           ( parseOnly )
-import           Parser                         ( file )
+import           Parser.Curl                    ( parseCurl )
 import           Powershell.Function           as PwshF
                                                 ( writeFunction )
 import           Powershell.Template           as PwshT
                                                 ( script )
 import           RIO
-import           RIO.List                       ( sort )
 import           RIO.Text                       ( unpack )
 import           System.IO                      ( putStrLn )
 import           System.Info                    ( os )
@@ -33,21 +31,6 @@ import           System.Posix.Files             ( ownerModes
                                                 )
 #endif
 import           Types
-import           Util                           ( secondM )
-
-curlCmd :: [Argument] -> Either String Curl
-curlCmd args = case sort args of
-  (A u : o) -> curlOps o $ Curl u [] [] NoData
-  _         -> Left "No url"
-
-curlOps :: [Argument] -> Curl -> Either String Curl
-curlOps [] c = Right c
-curlOps (P n v : args) c
-  | n == "-d" || n == "--data" = curlOps args $ c { dta = D v }
-  | n == "-H" || n == "--header" = curlOps args $ c { hds = H v : hds c }
-  | otherwise = curlOps args $ c { ops = n <> " " <> v : ops c }
-curlOps (F n : args) c = curlOps args $ c { ops = n : ops c }
-curlOps (A _ : _   ) _ = Left "Too many urls"
 
 generators :: ScriptOptions -> (([Text], Curl) -> Text, [Text] -> Text)
 generators opts = case lang opts of
@@ -73,7 +56,7 @@ run = do
       setFileMode other ownerModes
 #endif
   let (functionGen, scriptGen) = generators scriptOpts
-  liftIO $ case parseOnly file contents >>= mapM (secondM curlCmd) of
+  liftIO $ case parseCurl contents of
     Left  s  -> putStrLn s
     Right cu -> outFun . scriptGen $ map functionGen cu
 

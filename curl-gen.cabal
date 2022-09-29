@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           curl-gen
-version:        0.5.0
+version:        0.6.0
 description:    Please see the README on Github at <https://github.com/PKopel/curl-gen#readme>
 homepage:       https://github.com/PKopel/curl-gen#readme
 bug-reports:    https://github.com/PKopel/curl-gen/issues
@@ -28,10 +28,10 @@ library
       App
       Bash.Function
       Bash.Template
-      Parser
+      Parser.Command
+      Parser.Curl
       Powershell.Function
       Powershell.Template
-      Run
       Types
       Util
   other-modules:
@@ -51,9 +51,28 @@ library
 executable curl-gen
   main-is: Main.hs
   other-modules:
+      Run
       Paths_curl_gen
   hs-source-dirs:
-      app
+      cli
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson ==1.5.6.0
+    , attoparsec
+    , base >=4.11 && <10
+    , curl-gen
+    , interpolatedstring-perl6
+    , optparse-simple
+    , rio >=0.1.12.0
+    , unix
+  default-language: Haskell2010
+
+executable curl-gen-server
+  main-is: Main.hs
+  other-modules:
+      Paths_curl_gen
+  hs-source-dirs:
+      server
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson ==1.5.6.0
