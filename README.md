@@ -1,6 +1,6 @@
 # curl-gen
 
-Program generating bash scripts from lists of curl commands.
+Tool generating bash/powershell scripts from lists of curl commands.
 
 ## Usage
 
