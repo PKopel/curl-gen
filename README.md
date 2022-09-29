@@ -13,7 +13,7 @@ Program generating bash scripts from lists of curl commands.
 
 - `-r|--random` (optional) Include random values generator in the output script
 - `-t|--threads` (optional) Make the output script multi-threaded (able to run multiple calls at the same time)
-- `-l|--language Bash|Powershell|OsDefault` (optional, default: `OsDefault`) Select language of the output script
+- `-l|--language Bash|Powershell|OsDefault` (optional, default: `OsDefault`) Select language of the output script. `OsDefault` on Windows is Powershell, Bash otherwise.
 
 ### Input file format
 
