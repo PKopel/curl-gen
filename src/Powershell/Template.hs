@@ -14,7 +14,7 @@ import           RIO                            ( Text
                                                 , Bool(..)
                                                 )
 import           RIO.Text                       ( unlines )
-import           App                            ( ScriptOptions(..) )
+import           Types.Script                   ( ScriptOptions(..) )
 
 header :: Text
 header = [q|#!/usr/bin/env pwsh

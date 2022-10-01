@@ -5,10 +5,10 @@ module Parser.Curl
     ( parseCurl
     ) where
 import           Data.Attoparsec.Text           ( parseOnly )
-import           Parser.Command                 ( file )
+import           Parser.File                    ( file )
 import           RIO
 import           RIO.List                       ( sort )
-import           Types                          ( Argument(..)
+import           Types.Curl                     ( Argument(..)
                                                 , Curl(..)
                                                 , Dta(..)
                                                 , Header(H)

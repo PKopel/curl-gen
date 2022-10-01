@@ -23,16 +23,17 @@ import           RIO.Text.Partial               ( replace )
 import           RIO.Vector                    as V
                                                 ( toList )
 import           Text.InterpolatedString.Perl6  ( qc )
-import           Types                          ( Curl(Curl, dta, url)
+import           Types.Curl                     ( Curl(Curl, dta, url)
                                                 , Dta(D, NoData)
                                                 , Header(H)
                                                 , URL(URL, host)
                                                 )
+import           Types.Script                   ( Generator )
 import           Util                           ( indent )
 
 data FunctionOptions = FunOpts !Bool !Int
 
-writeFunction :: Bool -> ([Text], Curl) -> Text
+writeFunction :: Bool -> Generator
 writeFunction r (txts, c) = [qc|
 function {intercalate "_" txts}() \{
     local HOST=$\{ADDRESS:-'{host (url c)}'}

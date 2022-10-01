@@ -25,14 +25,15 @@ source-repository head
 
 library
   exposed-modules:
-      App
       Bash.Function
       Bash.Template
-      Parser.Command
+      Generators
       Parser.Curl
+      Parser.File
       Powershell.Function
       Powershell.Template
-      Types
+      Types.Curl
+      Types.Script
       Util
   other-modules:
       Paths_curl_gen
@@ -51,6 +52,7 @@ library
 executable curl-gen
   main-is: Main.hs
   other-modules:
+      App
       Run
       Paths_curl_gen
   hs-source-dirs:
@@ -78,7 +80,6 @@ executable curl-gen-server
       aeson ==1.5.6.0
     , attoparsec
     , base >=4.11 && <10
-    , curl-gen
     , interpolatedstring-perl6
     , optparse-simple
     , rio >=0.1.12.0
