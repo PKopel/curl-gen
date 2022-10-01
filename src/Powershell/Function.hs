@@ -7,7 +7,6 @@ module Powershell.Function
     ( writeFunction
     ) where
 
-import           App                            ( ScriptOptions(..) )
 import           RIO                            ( ($)
                                                 , (.)
                                                 , Text
@@ -20,13 +19,16 @@ import           RIO.Text.Partial               ( replace )
 import           Text.InterpolatedString.Perl6  ( q
                                                 , qc
                                                 )
-import           Types                          ( Curl(..)
+import           Types.Curl                     ( Curl(..)
                                                 , Dta(..)
                                                 , Header(H)
                                                 , URL(..)
                                                 )
+import           Types.Script                   ( Generator
+                                                , ScriptOptions(..)
+                                                )
 
-writeFunction :: ScriptOptions -> ([Text], Curl) -> Text
+writeFunction :: ScriptOptions -> Generator
 writeFunction opts (txts, c) = [qc|
 function {intercalate "-" txts} \{
     param (

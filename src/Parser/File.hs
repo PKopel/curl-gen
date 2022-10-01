@@ -2,7 +2,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser
+module Parser.File
   ( file
   ) where
 
@@ -15,7 +15,7 @@ import           RIO.List.Partial               ( foldl1 )
 import           RIO.Text                       ( pack
                                                 , words
                                                 )
-import           Types                          ( Argument(..)
+import           Types.Curl                     ( Argument(..)
                                                 , URL(URL)
                                                 )
 

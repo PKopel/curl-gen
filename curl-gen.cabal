@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           curl-gen
-version:        0.5.0
+version:        0.6.0
 description:    Please see the README on Github at <https://github.com/PKopel/curl-gen#readme>
 homepage:       https://github.com/PKopel/curl-gen#readme
 bug-reports:    https://github.com/PKopel/curl-gen/issues
@@ -25,14 +25,15 @@ source-repository head
 
 library
   exposed-modules:
-      App
       Bash.Function
       Bash.Template
-      Parser
+      Generators
+      Parser.Curl
+      Parser.File
       Powershell.Function
       Powershell.Template
-      Run
-      Types
+      Types.Curl
+      Types.Script
       Util
   other-modules:
       Paths_curl_gen
@@ -51,9 +52,11 @@ library
 executable curl-gen
   main-is: Main.hs
   other-modules:
+      App
+      Run
       Paths_curl_gen
   hs-source-dirs:
-      app
+      cli
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson ==1.5.6.0

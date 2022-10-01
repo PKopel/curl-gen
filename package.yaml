@@ -1,5 +1,5 @@
 name: curl-gen
-version: 0.5.0
+version: 0.6.0
 github: PKopel/curl-gen
 license: BSD3
 author: Paweł Kopel
@@ -44,7 +44,7 @@ library:
 executables:
   curl-gen:
     main: Main.hs
-    source-dirs: app
+    source-dirs: cli
     dependencies:
       - curl-gen
       - optparse-simple

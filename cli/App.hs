@@ -3,21 +3,19 @@
 module App
     ( App(..)
     , Options(..)
-    , ScriptOptions(..)
-    , ScriptLang(..)
+    , module Types.Script
     ) where
 
 import           RIO                            ( Bool
                                                 , HasLogFunc(..)
                                                 , LogFunc
-                                                , Read
-                                                , Show
                                                 , String
                                                 , lens
                                                 )
 import           RIO.Process                    ( HasProcessContext(..)
                                                 , ProcessContext
                                                 )
+import           Types.Script                   ( ScriptOptions(..) )
 
 
 -- | Command line arguments
@@ -26,14 +24,6 @@ data Options = Options
     , scriptOptions :: !ScriptOptions
     , verbose       :: !Bool
     , outputPath    :: !String
-    }
-
-data ScriptLang = Bash | Powershell | OsDefault deriving (Show, Read)
-
-data ScriptOptions = ScriptOptions
-    { threads :: !Bool
-    , random  :: !Bool
-    , lang    :: !ScriptLang
     }
 
 data App = App
