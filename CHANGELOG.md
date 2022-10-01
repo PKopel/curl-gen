@@ -8,6 +8,10 @@ and this project adheres to the
 
 ## Unreleased
 
+## 0.6.0
+
+- changed project structure
+
 ## 0.5.0
 
 - add support for Powershell scripts generation
