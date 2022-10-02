@@ -41,7 +41,7 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      aeson >=1.4.7.1
+      aeson >=1.4.7.1 && <1.5.6.1
     , attoparsec
     , base >=4.11 && <10
     , rio >=0.1.12.0
@@ -58,7 +58,7 @@ executable curl-gen
       cli
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.4.7.1
+      aeson >=1.4.7.1 && <1.5.6.1
     , attoparsec
     , base >=4.11 && <10
     , curl-gen
@@ -77,7 +77,7 @@ test-suite curl-gen-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.4.7.1
+      aeson >=1.4.7.1 && <1.5.6.1
     , attoparsec
     , base >=4.11 && <10
     , curl-gen

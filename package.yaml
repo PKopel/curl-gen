@@ -23,7 +23,7 @@ dependencies:
   - base >= 4.11 && < 10
   - rio >= 0.1.12.0
   - attoparsec
-  - aeson >= 1.4.7.1
+  - aeson >= 1.4.7.1 && < 1.5.6.1
   - unix
 
 ghc-options:
