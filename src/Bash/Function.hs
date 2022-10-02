@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
 
 module Bash.Function
@@ -22,7 +21,6 @@ import           RIO.Text                       ( intercalate
 import           RIO.Text.Partial               ( replace )
 import           RIO.Vector                    as V
                                                 ( toList )
-import           Text.InterpolatedString.Perl6  ( qc )
 import           Types.Curl                     ( Curl(Curl, dta, url)
                                                 , Dta(D, NoData)
                                                 , Header(H)
@@ -34,18 +32,17 @@ import           Util                           ( indent )
 data FunctionOptions = FunOpts !Bool !Int
 
 writeFunction :: Bool -> Generator
-writeFunction r (txts, c) = [qc|
-function {intercalate "_" txts}() \{
-    local HOST=$\{ADDRESS:-'{host (url c)}'}
-    local DATA
-    if [[ -n "$\{FILE_PATH}" ]]; then
-        DATA="$(cat $\{FILE_PATH})"
-    else
-        DATA='{showData (dta c)}'
-    fi
-    {writeCurl c}
-}
-|]
+writeFunction r (txts, c) = "\n\
+\function " <> intercalate "_" txts <> "() {\n\
+\    local HOST=${ADDRESS:-'" <> host (url c) <> "'}\n\
+\    local DATA\n\
+\    if [[ -n \"${FILE_PATH}\" ]]; then\n\
+\        DATA=\"$(cat ${FILE_PATH})\"\n\
+\    else\n\
+\        DATA='" <> showData (dta c) <> "'\n\
+\    fi\n\
+\    " <> writeCurl c <> "\n\
+\}"
  where
   opts = FunOpts r 0
   wrap s = "{\n" <> s <> "\n}"
@@ -67,9 +64,9 @@ writeJsonObjField op@(FunOpts r n) parent (name, val) = case val of
   _flat    -> if r then leaf else node
  where
   node
-    = [qc|{indent n}"{name}":'$\{VALUES["{fieldPath}"]:-'{writeJsonVal op fieldPath val}'}'|]
+    = indent n <> "\"" <> name <> "\":'${VALUES[\"" <> fieldPath <> "\"]:-'" <> writeJsonVal op fieldPath val <> "'}'"
   leaf
-    = [qc|{indent n}"{name}":'$(eval $\{VALUES["{fieldPath}"]:-'echo {writeJsonVal op fieldPath val}'})'|]
+    = indent n <> "\"" <> name <> "\":'$(eval ${VALUES[\"" <> fieldPath <> "\"]:-'echo " <> writeJsonVal op fieldPath val <> "'})'"
   fieldPath = parent <> "." <> name
 
 writeJsonArray :: FunctionOptions -> Text -> [(Integer, Value)] -> Text
@@ -83,9 +80,9 @@ writeJsonArrayField op@(FunOpts r n) parent (idx, val) = case val of
   _flat    -> if r then leaf else node
  where
   node
-    = [qc|{indent n}'$\{VALUES["{fieldPath}"]:-'{writeJsonVal op fieldPath val}'}'|]
+    = indent n <> "'${VALUES[\"" <> fieldPath <> "\"]:-'" <> writeJsonVal op fieldPath val <> "'}'"
   leaf
-    = [qc|{indent n}'$(eval $\{VALUES["{fieldPath}"]:-'echo {writeJsonVal op fieldPath val}'})'|]
+    = indent n <> "'$(eval ${VALUES[\"" <> fieldPath <> "\"]:-'echo " <> writeJsonVal op fieldPath val <> "'})'"
   fieldPath = parent <> "(" <> pack (show idx) <> ")"
 
 writeJsonVal :: FunctionOptions -> Text -> Value -> Text
@@ -107,10 +104,10 @@ writeCurl (Curl (URL p _ a) o hs dt) = intercalate
   (fstLine : urlLine : dtaLine dt : map hdrLine hs)
  where
   fstLine = unwords ("$CURL" : o)
-  urlLine = [qc|    "{p}://$HOST{writePath a}"|]
+  urlLine = "    \"" <> p <> "://$HOST" <> writePath a <> "\""
   dtaLine (D _)  = "    --data \"$DATA\""
   dtaLine NoData = ""
-  hdrLine (H h) = [qc|    --header "{h}"|]
+  hdrLine (H h) = "    --header \"" <> h <> "\""
 
 writePath :: Text -> Text
 writePath = replace "}" "']}" . replace "{" "${VALUES['"

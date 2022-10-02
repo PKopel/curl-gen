@@ -1,5 +1,5 @@
 name: curl-gen
-version: 0.6.0
+version: 0.6.1
 github: PKopel/curl-gen
 license: BSD3
 author: Paweł Kopel
@@ -24,7 +24,6 @@ dependencies:
   - rio >= 0.1.12.0
   - attoparsec
   - aeson >= 1.4.7.1
-  - interpolatedstring-perl6
   - unix
 
 ghc-options:
