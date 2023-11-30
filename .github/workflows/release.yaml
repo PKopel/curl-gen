@@ -3,6 +3,7 @@ name: Release
 on:
   # Trigger the workflow on the new 'v*' tag created
   workflow_dispatch:
+  pull_request:
   push:
     tags:
       - "v*"
