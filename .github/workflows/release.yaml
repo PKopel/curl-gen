@@ -14,7 +14,7 @@ jobs:
       hash-linux: ${{ steps.hash.outputs.hash }}
       hash-macos: ${{ steps.hash-mac.outputs.hash }}
       hash-windows: ${{ steps.hash-win.outputs.hash }}
-    name: ${{ matrix.os }}/GHC ${{ matrix.ghc }}/${{ github.ref }}
+    name: ${{ matrix.os }} / stack ${{ matrix.stack }} / ghc ${{ matrix.ghc }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
