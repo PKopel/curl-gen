@@ -8,45 +8,25 @@ on:
       - "v*"
 
 jobs:
-  create_release:
-    name: Create Github Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1.1.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: false
-
-      - name: Output Release URL File
-        run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
-      - name: Save Release URL File for publish
-        uses: actions/upload-artifact@v1
-        with:
-          name: release_url
-          path: release_url.txt
-
-  build_artifact:
-    needs: [create_release]
+  build:
+    outputs:
+      hash-linux: ${{ steps.hash.outputs.hash }}
+      hash-macos: ${{ steps.hash-mac.outputs.hash }}
+      hash-windows: ${{ steps.hash-win.outputs.hash }}
     name: ${{ matrix.os }}/GHC ${{ matrix.ghc }}/${{ github.ref }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        cabal: ["3.2"]
-        ghc: ["8.10.7"]
+        cabal: ["3.10"]
+        stack: ["2.11.1"]
+        ghc: ["9.6.3"]
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - uses: freckle/stack-cache-action@v2
 
       - if: matrix.os == 'ubuntu-latest'
         run: |
@@ -60,60 +40,116 @@ jobs:
         run: |
           echo "os_name=windows" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo "EXT=.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
-          (Get-Content ./curl-gen.cabal) | Select-String ", unix" -notMatch | Set-Content ./curl-gen.cabal
 
-      - uses: haskell/actions/setup@v2
+      - uses: haskell-actions/setup@v2
         name: Setup Haskell
         id: setup-haskell-cabal
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
-
-      - name: Freeze
-        run: |
-          cabal freeze
-
-      - name: Cache ~/.cabal/store
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('cabal.project.freeze') }}
+          stack-version: ${{ matrix.stack }}
 
       - name: Build binary
         run: |
           mkdir bin
-          cabal install exe:curl-gen --install-method=copy --overwrite-policy=always --installdir=bin --enable-executable-stripping --enable-library-stripping
+          stack install --local-bin-path=bin
+          mv ./bin/curl-gen${{ env.EXT }} ./bin/curl-gen-amd64-${{ env.os_name }}${{ env.EXT }}
 
       - name: Set binary path name
         if: matrix.os != 'windows-latest'
-        run: echo "BINARY_PATH=./bin/curl-gen${{ env.EXT }}" >> $GITHUB_ENV
+        run: echo "BINARY_PATH=./bin/curl-gen-amd64-${{ env.os_name }}${{ env.EXT }}" >> $GITHUB_ENV
 
       - name: Set binary path name
         if: matrix.os == 'windows-latest'
-        run: echo "BINARY_PATH=./bin/curl-gen${{ env.EXT }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+        run: echo "BINARY_PATH=./bin/curl-gen-amd64-${{ env.os_name }}${{ env.EXT }}" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Compress binary
-        uses: svenstaro/upx-action@2.0.1
-        with:
-          file: ${{ env.BINARY_PATH }}
+      # disabled because it causes issues with windows and mac
+      # - name: Compress binary with upx
+      #   uses: svenstaro/upx-action@2.3.0
+      #   with:
+      #     files: ${{ env.BINARY_PATH }}
 
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
+      - name: Strip binary
+        run: strip ${{ env.BINARY_PATH }}
 
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
+      - name: Check binary
         run: |
-          echo "::set-output name=upload_url::$(cat release_url/release_url.txt)"
+          ${{ env.BINARY_PATH }} --version
 
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate hashes
+        if: matrix.os == 'ubuntu-latest'
+        id: hash
+        run: |
+          # sha256sum generates sha256 hash for all artifacts.
+          # base64 -w0 encodes to base64 and outputs on a single line.
+          # sha256sum artifact1 artifact2 ... | base64 -w0
+          echo "hash=$(sha256sum ${{ env.BINARY_PATH }} | base64 -w0)" >> $GITHUB_OUTPUT
+
+      - name: Generate hashes
+        if: matrix.os == 'macOS-latest'
+        id: hash-mac
+        run: |
+          # sha256sum generates sha256 hash for all artifacts.
+          # base64 -w0 encodes to base64 and outputs on a single line.
+          # sha256sum artifact1 artifact2 ... | base64 -w0
+          echo "hash=$(shasum -a 256 ${{ env.BINARY_PATH }} | base64)" >> $GITHUB_OUTPUT
+
+      - name: Generate hashes
+        if: matrix.os == 'windows-latest'
+        id: hash-win
+        run: |
+          # sha256sum generates sha256 hash for all artifacts.
+          # base64 -w0 encodes to base64 and outputs on a single line.
+          # sha256sum artifact1 artifact2 ... | base64 -w0
+          echo "hash=$(sha256sum ${{ env.BINARY_PATH }} | base64 -w0)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v3.1.0
         with:
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ${{ env.BINARY_PATH }}
-          asset_name: curl-gen-amd64-${{ env.os_name }}${{ env.EXT }}
-          asset_content_type: application/octet-stream
+          name: curl-gen-amd64-${{ env.os_name }}${{ env.EXT }}
+          path: ${{ env.BINARY_PATH }}
+          if-no-files-found: error
+          retention-days: 5
+
+  provenance:
+    needs: [build]
+    strategy:
+      matrix:
+        hash: [hash-linux, hash-macos, hash-windows]
+    permissions:
+      actions: read # To read the workflow path.
+      id-token: write # To sign the provenance.
+      contents: write # To add assets to a release.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    with:
+      base64-subjects: "${{ needs.build.outputs[matrix.hash] }}"
+      upload-assets: ${{ startsWith(github.ref, 'refs/tags/') }} # Optional: Upload to a new release
+      continue-on-error: true
+
+  release:
+    needs: [build, provenance]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download linux binary
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: curl-gen-amd64-linux
+
+      - name: Download macOS binary
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: curl-gen-amd64-darwin
+
+      - name: Download windows binary
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: curl-gen-amd64-windows.exe
+
+      - name: Upload assets
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          files: |
+            curl-gen-amd64-linux
+            curl-gen-amd64-darwin
+            curl-gen-amd64-windows.exe

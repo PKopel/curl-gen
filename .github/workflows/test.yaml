@@ -8,47 +8,29 @@ on:
 
 jobs:
   stack:
-    name: stack ${{ matrix.stack }} / resolver ${{ matrix.resolver }} / ghc ${{ matrix.ghc }}
+    name: stack ${{ matrix.stack }} / ghc ${{ matrix.ghc }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stack: ["2.7.5"]
-        ghc: ["8.10.7"]
-        resolver: [lts-18.19]
+        stack: ["2.11.1"]
+        ghc: ["9.6.3"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         name: Checkout
 
-      - uses: haskell/actions/setup@v2
+      - uses: haskell-actions/setup@v2
         name: Setup Haskell Stack
         with:
           ghc-version: ${{ matrix.ghc }}
           stack-version: ${{ matrix.stack }}
 
-      - name: Install alex and happy
-        run: |
-          sudo apt -y install alex happy
-
-      - uses: actions/cache@v2.1.3
-        name: Cache ~/.stack
-        with:
-          path: ~/.stack
-          key: ${{ runner.os }}-${{ matrix.ghc }}-stack
-
-      - name: Initalize stack for LTS
-        run: |
-          stack update
-          stack init --resolver ${{ matrix.resolver }} --force
-
-      - name: Install dependencies
-        run: |
-          stack --resolver ${{ matrix.resolver }} build --no-run-tests --no-run-benchmarks --only-dependencies
+      - uses: freckle/stack-cache-action@v2
 
       - name: Build
         run: |
-          stack --resolver ${{ matrix.resolver }} build --no-run-tests --no-run-benchmarks
+          stack --system-ghc build --no-run-tests --no-run-benchmarks
 
       - name: Test
         run: |
-          stack --resolver ${{ matrix.resolver }} test
+          stack --system-ghc test

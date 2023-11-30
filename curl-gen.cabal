@@ -1,11 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
 name:           curl-gen
-version:        0.6.1
+version:        0.6.2
 description:    Please see the README on Github at <https://github.com/PKopel/curl-gen#readme>
 homepage:       https://github.com/PKopel/curl-gen#readme
 bug-reports:    https://github.com/PKopel/curl-gen/issues
@@ -40,13 +40,20 @@ library
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
-  build-depends:
-      aeson >=1.4.7.1 && <1.5.6.1
-    , attoparsec
-    , base >=4.11 && <10
-    , rio >=0.1.12.0
-    , unix
   default-language: Haskell2010
+  if os(windows)
+    build-depends:
+        attoparsec
+      , base >=4.11 && <10
+      , microaeson
+      , rio >=0.1.12.0
+  else
+    build-depends:
+        attoparsec
+      , base >=4.11 && <10
+      , microaeson
+      , rio >=0.1.12.0
+      , unix
 
 executable curl-gen
   main-is: Main.hs
@@ -58,14 +65,22 @@ executable curl-gen
       cli
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.4.7.1 && <1.5.6.1
-    , attoparsec
-    , base >=4.11 && <10
-    , curl-gen
+      curl-gen
     , optparse-simple
-    , rio >=0.1.12.0
-    , unix
   default-language: Haskell2010
+  if os(windows)
+    build-depends:
+        attoparsec
+      , base >=4.11 && <10
+      , microaeson
+      , rio >=0.1.12.0
+  else
+    build-depends:
+        attoparsec
+      , base >=4.11 && <10
+      , microaeson
+      , rio >=0.1.12.0
+      , unix
 
 test-suite curl-gen-test
   type: exitcode-stdio-1.0
@@ -77,11 +92,20 @@ test-suite curl-gen-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.4.7.1 && <1.5.6.1
-    , attoparsec
-    , base >=4.11 && <10
-    , curl-gen
+      curl-gen
     , hspec
     , rio >=0.1.12.0
-    , unix
   default-language: Haskell2010
+  if os(windows)
+    build-depends:
+        attoparsec
+      , base >=4.11 && <10
+      , microaeson
+      , rio >=0.1.12.0
+  else
+    build-depends:
+        attoparsec
+      , base >=4.11 && <10
+      , microaeson
+      , rio >=0.1.12.0
+      , unix
