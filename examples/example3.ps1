@@ -99,7 +99,7 @@ function Set-Object {
 ################### auto-generated functions start ###################
     
  
-function test-put{
+function test-put {
     param (
         [switch]$dryRun,
     
@@ -158,7 +158,7 @@ function test-put{
     } -AsJob | Wait-Job | Receive-Job
 }
 
-function test-get{
+function test-get {
     param (
         [switch]$dryRun,
     

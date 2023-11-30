@@ -67,13 +67,13 @@ function test_put() {
         DATA="$(cat ${FILE_PATH})"
     else
         DATA='{
-    "obj":'${VALUES[".obj"]:-'{
-        "string":'$(eval ${VALUES[".obj.string"]:-'echo \"data\"'})'
-    }'}',
     "array":'${VALUES[".array"]:-'[
         '$(eval ${VALUES[".array(0)"]:-'echo 1.0'})',
         '$(eval ${VALUES[".array(1)"]:-'echo null'})'
-    ]'}'
+    ]'}',
+    "obj":'${VALUES[".obj"]:-'{
+        "string":'$(eval ${VALUES[".obj.string"]:-'echo \"data\"'})'
+    }'}'
 }'
     fi
     $CURL -v -k -X PUT \
