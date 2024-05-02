@@ -4,7 +4,7 @@
 ![release](https://github.com/PKopel/curl-gen/actions/workflows/release.yaml/badge.svg)
 
 Tool generating bash/powershell scripts from lists of curl commands.
-Also available as a web app at <https://pkopel.github.io/curl-gen-server/>.
+Also available as a web app at <https://pkopel.github.io/curl-gen-web/>.
 
 ## Usage
 
