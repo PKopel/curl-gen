@@ -46,6 +46,7 @@ jobs:
         name: Setup Haskell
         id: setup-haskell-cabal
         with:
+          enable-stack: true
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
           stack-version: ${{ matrix.stack }}
