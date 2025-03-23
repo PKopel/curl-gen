@@ -19,9 +19,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        cabal: ["3.10"]
-        stack: ["2.11.1"]
-        ghc: ["9.6.3"]
+        cabal: ["3.12"]
+        stack: ["3.3.1"]
+        ghc: ["9.6.4"]
 
     steps:
       - name: Check out code
