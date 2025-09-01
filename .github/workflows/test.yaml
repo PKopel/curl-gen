@@ -16,7 +16,7 @@ jobs:
         ghc: ["9.6.4"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         name: Checkout
 
       - uses: haskell-actions/setup@v2
