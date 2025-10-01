@@ -149,7 +149,7 @@ jobs:
           name: curl-gen-amd64-windows.exe
 
       - name: Upload assets
-        uses: softprops/action-gh-release@v2.3.2
+        uses: softprops/action-gh-release@v2.3.3
         with:
           files: |
             curl-gen-amd64-linux
