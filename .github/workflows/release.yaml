@@ -27,7 +27,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - uses: freckle/stack-cache-action@v2
+      - uses: freckle/stack-cache-action@v3
 
       - if: matrix.os == 'ubuntu-latest'
         run: |
