@@ -27,7 +27,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - uses: freckle/stack-cache-action@v2
+      - name: Setup stack cache
+        uses: freckle/stack-action@v5
+        with:
+          stack-build-arguments: --dry-run
+          install-stack: true
+          upgrade-stack: false
 
       - if: matrix.os == 'ubuntu-latest'
         run: |

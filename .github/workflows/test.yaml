@@ -16,17 +16,22 @@ jobs:
         ghc: ["9.6.4"]
 
     steps:
-      - uses: actions/checkout@v6
-        name: Checkout
+      - name: Check out code
+        uses: actions/checkout@v6
 
-      - uses: haskell-actions/setup@v2
-        name: Setup Haskell Stack
+      - name: Setup Haskell Stack
+        uses: haskell-actions/setup@v2
         with:
           enable-stack: true
           ghc-version: ${{ matrix.ghc }}
           stack-version: ${{ matrix.stack }}
 
-      - uses: freckle/stack-cache-action@v2
+      - name: Setup stack cache
+        uses: freckle/stack-action@v5
+        with:
+          stack-build-arguments: --dry-run
+          install-stack: false
+          upgrade-stack: false
 
       - name: Build
         run: |
